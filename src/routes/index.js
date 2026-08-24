@@ -27,6 +27,10 @@ const paymentRoutes = require('./paymentRoutes');
 const supportRoutes = require('./supportRoutes');
 const couponRoutes = require('./couponRoutes');
 const SupportTicket = require('../models/SupportTicket');
+const { handleSSEStream } = require('../services/realtimeService');
+
+// Real-Time Event Stream Endpoint
+router.get('/sync/stream', handleSSEStream);
 
 // Mount Admin Endpoints under /api/admin
 router.use('/admin/auth', adminAuthRoutes);

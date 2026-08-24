@@ -2,6 +2,7 @@ const Product = require('../models/Product');
 const InventoryLog = require('../models/InventoryLog');
 const { logAuditAction } = require('../services/auditService');
 const { calculateEMIBreakdown } = require('../services/emiService');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 const getProducts = async (req, res) => {
   try {
@@ -151,6 +152,14 @@ const createProduct = async (req, res) => {
       req
     });
 
+    // Broadcast real-time catalog change
+    broadcastRealtimeEvent('CATALOG_CHANGED', {
+      action: 'create',
+      productId: newProduct._id,
+      slug: newProduct.slug,
+      name: newProduct.name
+    });
+
     return res.status(201).json({
       success: true,
       message: 'Product created successfully',
@@ -239,6 +248,14 @@ const updateProduct = async (req, res) => {
       req
     });
 
+    // Broadcast real-time catalog change
+    broadcastRealtimeEvent('CATALOG_CHANGED', {
+      action: 'update',
+      productId: product._id,
+      slug: product.slug,
+      name: product.name
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Product updated successfully',
@@ -268,6 +285,13 @@ const deleteProduct = async (req, res) => {
       resourceId: product._id,
       details: { name: product.name, sku: product.sku },
       req
+    });
+
+    // Broadcast real-time catalog change
+    broadcastRealtimeEvent('CATALOG_CHANGED', {
+      action: 'delete',
+      productId: product._id,
+      slug: product.slug
     });
 
     return res.status(200).json({

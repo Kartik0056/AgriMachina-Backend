@@ -2,6 +2,7 @@ const Category = require('../models/Category');
 const Brand = require('../models/Brand');
 const Coupon = require('../models/Coupon');
 const { logAuditAction } = require('../services/auditService');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 // Categories
 const getAdminCategories = async (req, res) => {
@@ -31,6 +32,8 @@ const createCategory = async (req, res) => {
       req
     });
 
+    broadcastRealtimeEvent('CATEGORY_CHANGED', { action: 'create', categoryId: cat._id });
+
     return res.status(201).json({ success: true, category: cat });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
@@ -51,6 +54,8 @@ const updateCategory = async (req, res) => {
       req
     });
 
+    broadcastRealtimeEvent('CATEGORY_CHANGED', { action: 'update', categoryId: cat._id });
+
     return res.status(200).json({ success: true, category: cat });
   } catch (error) {
     return res.status(400).json({ success: false, message: error.message });
@@ -70,6 +75,8 @@ const deleteCategory = async (req, res) => {
       details: { name: cat.name },
       req
     });
+
+    broadcastRealtimeEvent('CATEGORY_CHANGED', { action: 'delete', categoryId: req.params.id });
 
     return res.status(200).json({ success: true, message: 'Category deleted' });
   } catch (error) {
@@ -104,6 +111,8 @@ const createBrand = async (req, res) => {
       details: { name: brand.name },
       req
     });
+
+    broadcastRealtimeEvent('CATEGORY_CHANGED', { action: 'create_brand', brandId: brand._id });
 
     return res.status(201).json({ success: true, brand });
   } catch (error) {
