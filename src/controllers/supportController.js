@@ -1,10 +1,11 @@
 const SupportTicket = require('../models/SupportTicket');
 const sanitizeHtml = require('sanitize-html');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 // Create a new support inquiry / chat ticket
 const createTicket = async (req, res) => {
   try {
-    const { name, phone, email, subject, message, productId, productTitle, productSku, inquiryType, images, videoUrl } = req.body;
+    const { name, phone, email, subject, message, productId, productTitle, productSku, inquiryType, images, attachments, videoUrl } = req.body;
     const userId = req.user ? req.user._id : null;
 
     if (!name || !phone || !subject || !message) {
@@ -33,6 +34,7 @@ const createTicket = async (req, res) => {
           senderName: name.trim(),
           text: cleanMessage,
           images: Array.isArray(images) ? images : [],
+          attachments: Array.isArray(attachments) ? attachments : [],
           videoUrl: (videoUrl || '').trim(),
           createdAt: new Date()
         }
@@ -42,10 +44,57 @@ const createTicket = async (req, res) => {
 
     await ticket.save();
 
+    // Broadcast instant real-time notification to all connected admin panels
+    try {
+      broadcastRealtimeEvent('NEW_SUPPORT_QUERY', {
+        ticketId: ticket._id,
+        ticketNumber: ticket.ticketNumber,
+        userName: ticket.userName,
+        userPhone: ticket.userPhone,
+        subject: ticket.subject,
+        productTitle: ticket.productTitle,
+        type: 'new_ticket',
+        preview: cleanMessage.slice(0, 100)
+      });
+    } catch (e) {
+      console.error('Broadcast failed:', e);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Support ticket created successfully! Our engineering team will assist you.',
       ticket
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Upload attachment files (images, documents, PDFs, videos)
+const uploadChatFiles = async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ success: false, message: 'No files were uploaded.' });
+    }
+
+    const uploaded = req.files.map(f => {
+      const isVideo = f.mimetype.startsWith('video/') || f.originalname.toLowerCase().endsWith('.mp4');
+      const isPdf = f.mimetype.includes('pdf') || f.originalname.toLowerCase().endsWith('.pdf');
+      const fileUrl = `/uploads/${f.filename}`;
+
+      return {
+        url: fileUrl,
+        name: f.originalname,
+        size: f.size,
+        fileType: isVideo ? 'video' : isPdf ? 'document' : 'image'
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Attachments uploaded successfully.',
+      files: uploaded,
+      urls: uploaded.map(u => u.url)
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -69,7 +118,6 @@ const getMyTickets = async (req, res) => {
     };
 
     const tickets = await SupportTicket.find(query).sort({ lastMessageAt: -1 }).lean();
-
     const totalUnread = tickets.reduce((sum, t) => sum + (t.unreadByUser || 0), 0);
 
     return res.status(200).json({
@@ -92,7 +140,6 @@ const getTicketDetails = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Ticket not found.' });
     }
 
-    // Reset unread for user
     if (ticket.unreadByUser > 0) {
       ticket.unreadByUser = 0;
       await ticket.save();
@@ -111,9 +158,12 @@ const getTicketDetails = async (req, res) => {
 const sendUserMessage = async (req, res) => {
   try {
     const { id } = req.params;
-    const { text, images, videoUrl } = req.body;
+    const { text, images, attachments, videoUrl } = req.body;
 
-    if ((!text || !text.trim()) && (!images || images.length === 0) && !videoUrl) {
+    const hasImages = Array.isArray(images) && images.length > 0;
+    const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
+
+    if ((!text || !text.trim()) && !hasImages && !hasAttachments && !videoUrl) {
       return res.status(400).json({ success: false, message: 'Message cannot be empty.' });
     }
 
@@ -129,6 +179,7 @@ const sendUserMessage = async (req, res) => {
       senderName: req.user ? req.user.name : ticket.userName,
       text: cleanText,
       images: Array.isArray(images) ? images : [],
+      attachments: Array.isArray(attachments) ? attachments : [],
       videoUrl: (videoUrl || '').trim(),
       createdAt: new Date()
     };
@@ -141,6 +192,20 @@ const sendUserMessage = async (req, res) => {
     }
 
     await ticket.save();
+
+    try {
+      broadcastRealtimeEvent('NEW_SUPPORT_QUERY', {
+        ticketId: ticket._id,
+        ticketNumber: ticket.ticketNumber,
+        userName: ticket.userName,
+        userPhone: ticket.userPhone,
+        subject: ticket.subject,
+        type: 'user_reply',
+        preview: (cleanText || 'Attached Media / File').slice(0, 100)
+      });
+    } catch (e) {
+      console.error('Broadcast failed:', e);
+    }
 
     return res.status(200).json({
       success: true,
@@ -207,7 +272,6 @@ const adminGetTickets = async (req, res) => {
       .limit(Number(limit))
       .lean();
 
-    // Stats
     const openCount = await SupportTicket.countDocuments({ status: 'Open' });
     const inProgressCount = await SupportTicket.countDocuments({ status: 'In Progress' });
     const totalUnreadByAdmin = await SupportTicket.aggregate([
@@ -257,9 +321,12 @@ const adminGetTicketDetails = async (req, res) => {
 const adminSendReply = async (req, res) => {
   try {
     const { id } = req.params;
-    const { text, images, videoUrl, status } = req.body;
+    const { text, images, attachments, videoUrl, status } = req.body;
 
-    if ((!text || !text.trim()) && (!images || images.length === 0) && !videoUrl) {
+    const hasImages = Array.isArray(images) && images.length > 0;
+    const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
+
+    if ((!text || !text.trim()) && !hasImages && !hasAttachments && !videoUrl) {
       return res.status(400).json({ success: false, message: 'Reply message cannot be empty.' });
     }
 
@@ -275,6 +342,7 @@ const adminSendReply = async (req, res) => {
       senderName: req.admin ? `${req.admin.name} (Support Engineer)` : 'AgriMachina Support Team',
       text: cleanText,
       images: Array.isArray(images) ? images : [],
+      attachments: Array.isArray(attachments) ? attachments : [],
       videoUrl: (videoUrl || '').trim(),
       createdAt: new Date()
     };
@@ -290,6 +358,15 @@ const adminSendReply = async (req, res) => {
 
     await ticket.save();
 
+    try {
+      broadcastRealtimeEvent('TICKET_UPDATED', {
+        ticketId: ticket._id,
+        ticketNumber: ticket.ticketNumber,
+        type: 'admin_reply',
+        status: ticket.status
+      });
+    } catch (e) {}
+
     return res.status(200).json({
       success: true,
       message: 'Reply sent to customer successfully.',
@@ -300,7 +377,7 @@ const adminSendReply = async (req, res) => {
   }
 };
 
-// Admin updates ticket status / priority
+// Admin updates ticket status
 const adminUpdateTicketStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -316,9 +393,17 @@ const adminUpdateTicketStatus = async (req, res) => {
 
     await ticket.save();
 
+    try {
+      broadcastRealtimeEvent('TICKET_UPDATED', {
+        ticketId: ticket._id,
+        ticketNumber: ticket.ticketNumber,
+        status: ticket.status
+      });
+    } catch (e) {}
+
     return res.status(200).json({
       success: true,
-      message: 'Ticket updated successfully.',
+      message: `Ticket status updated to ${ticket.status}`,
       ticket
     });
   } catch (error) {
@@ -328,6 +413,7 @@ const adminUpdateTicketStatus = async (req, res) => {
 
 module.exports = {
   createTicket,
+  uploadChatFiles,
   getMyTickets,
   getTicketDetails,
   sendUserMessage,

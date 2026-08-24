@@ -19,10 +19,16 @@ const getPublicProducts = async (req, res) => {
     const query = { status: 'Published' };
 
     if (category) {
-      query.category = new RegExp(`^${category.trim()}$`, 'i');
+      const decodedCat = category.replace(/&amp;/g, '&').trim();
+      const escapedCat = decodedCat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const ampVariant = escapedCat.replace(/&/g, '(&|&amp;)');
+      query.category = new RegExp(`^${ampVariant}$`, 'i');
     }
     if (subcategory) {
-      query.subcategory = new RegExp(`^${subcategory.trim()}$`, 'i');
+      const decodedSub = subcategory.replace(/&amp;/g, '&').trim();
+      const escapedSub = decodedSub.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const ampVariant = escapedSub.replace(/&/g, '(&|&amp;)');
+      query.subcategory = new RegExp(`^${ampVariant}$`, 'i');
     }
     if (brand) {
       query.brand = new RegExp(`^${brand.trim()}$`, 'i');

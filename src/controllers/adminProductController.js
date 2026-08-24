@@ -31,7 +31,12 @@ const getProducts = async (req, res) => {
       ];
     }
 
-    if (category) query.category = category;
+    if (category) {
+      const decodedCat = category.replace(/&amp;/g, '&').trim();
+      const escapedCat = decodedCat.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const ampVariant = escapedCat.replace(/&/g, '(&|&amp;)');
+      query.category = new RegExp(`^${ampVariant}$`, 'i');
+    }
     if (brand) query.brand = brand;
     if (status) query.status = status;
     if (stockStatus) query.stockStatus = stockStatus;

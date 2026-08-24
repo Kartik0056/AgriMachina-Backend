@@ -23,43 +23,29 @@ const diskStorage = multer.diskStorage({
 // Memory Storage for XLSX/CSV & ZIP archives
 const memoryStorage = multer.memoryStorage();
 
-// Image file filter
-const imageFilter = (req, file, cb) => {
-  const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  if (allowedMimes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid image file type. Only JPG, PNG, and WEBP are supported.'), false);
-  }
-};
-
-// Document & Spreadsheet filter
-const documentFilter = (req, file, cb) => {
-  const allowedExtensions = ['.xlsx', '.xls', '.csv', '.pdf', '.zip'];
-  const ext = path.extname(file.originalname).toLowerCase();
-  if (allowedExtensions.includes(ext)) {
-    cb(null, true);
-  } else {
-    cb(new Error('Unsupported document format. Allowed: XLSX, CSV, PDF, ZIP.'), false);
-  }
-};
+// Allowed file extensions for attachments (Images, Documents, PDFs, Audio, Video)
+const allowedMediaExtensions = [
+  '.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg', '.bmp',
+  '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.csv', '.txt',
+  '.mp4', '.mov', '.avi', '.webm', '.mkv', '.zip'
+];
 
 const uploadMedia = multer({
   storage: diskStorage,
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
-    if (['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.mp4'].includes(ext)) {
+    if (allowedMediaExtensions.includes(ext) || file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype.includes('pdf')) {
       cb(null, true);
     } else {
-      cb(new Error('Invalid file type.'), false);
+      cb(new Error(`Unsupported file type (${ext || file.mimetype}). Allowed: Photos, PDFs, Docs, MP4 Videos up to 5MB.`), false);
     }
   }
 });
 
 const uploadSpreadsheet = multer({
   storage: memoryStorage,
-  limits: { fileSize: 20 * 1024 * 1024 } // 20MB
+  limits: { fileSize: 25 * 1024 * 1024 } // 25MB
 });
 
 const uploadZipArchive = multer({

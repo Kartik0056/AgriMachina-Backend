@@ -17,6 +17,12 @@ const messageSchema = new mongoose.Schema({
   images: [{
     type: String
   }],
+  attachments: [{
+    url: String,
+    name: String,
+    size: Number,
+    fileType: String
+  }],
   videoUrl: {
     type: String,
     default: ''
