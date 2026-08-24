@@ -16,6 +16,8 @@ const adminAuditRoutes = require('./adminAuditRoutes');
 const adminRoleRoutes = require('./adminRoleRoutes');
 const adminCategoryRoutes = require('./adminCategoryRoutes');
 const adminCouponRoutes = require('./adminCouponRoutes');
+const adminBannerRoutes = require('./adminBannerRoutes');
+const { getPublicSlides } = require('../controllers/adminBannerController');
 
 // Storefront Routes
 const productRoutes = require('./productRoutes');
@@ -43,9 +45,13 @@ router.use('/admin/audit-logs', adminAuditRoutes);
 router.use('/admin/roles', adminRoleRoutes);
 router.use('/admin/coupons', adminCouponRoutes);
 router.use('/admin/support', supportRoutes);
+router.use('/admin/banners', adminBannerRoutes);
+router.use('/admin/hero-slides', adminBannerRoutes);
 router.use('/admin', adminCategoryRoutes);
 
 // Mount Storefront Endpoints
+router.get('/banners', getPublicSlides);
+router.get('/hero-slides', getPublicSlides);
 router.use('/products/:productId/reviews', reviewRoutes);
 router.use('/products', productRoutes);
 router.use('/reviews', reviewRoutes);
