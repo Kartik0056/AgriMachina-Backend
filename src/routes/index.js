@@ -28,6 +28,7 @@ const userRoutes = require('./userRoutes');
 const paymentRoutes = require('./paymentRoutes');
 const supportRoutes = require('./supportRoutes');
 const couponRoutes = require('./couponRoutes');
+const aiRoutes = require('./aiRoutes');
 const SupportTicket = require('../models/SupportTicket');
 const { handleSSEStream } = require('../services/realtimeService');
 
@@ -61,6 +62,7 @@ router.use('/users', userRoutes);
 router.use('/payment', paymentRoutes);
 router.use('/support', supportRoutes);
 router.use('/coupons', couponRoutes);
+router.use('/ai', aiRoutes);
 
 // Public Category & Brand listings
 router.get('/categories', async (req, res) => {

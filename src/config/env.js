@@ -13,7 +13,9 @@ const env = {
   ADMIN_NAME: process.env.ADMIN_NAME || 'Master Agri Administrator',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
   RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_TSjrOFCBv53fsK',
-  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'rhATHfy93s5sMhwreOL2zfYy'
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'rhATHfy93s5sMhwreOL2zfYy',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash'
 };
 
 module.exports = env;

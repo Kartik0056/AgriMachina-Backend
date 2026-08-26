@@ -1,6 +1,7 @@
 const { createRazorpayOrder, verifyPaymentSignature, getComprehensiveEMIPlans } = require('../services/razorpayService');
 const Order = require('../models/Order');
 const { logAuditAction } = require('../services/auditService');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 /**
  * @desc Create Razorpay Order
@@ -82,6 +83,21 @@ async function verifyRazorpayPaymentHandler(req, res, next) {
             razorpay_order_id,
             amount: updatedOrder.pricing.grandTotal
           }, req.ip);
+        }
+
+        try {
+          broadcastRealtimeEvent('ORDER_UPDATED', {
+            orderId: updatedOrder._id,
+            orderNumber: updatedOrder.orderNumber,
+            userId: String(updatedOrder.user),
+            paymentStatus: updatedOrder.payment?.status,
+            paymentMethod: updatedOrder.payment?.method,
+            isEmi: (updatedOrder.payment?.method || '').toLowerCase().includes('emi') || updatedOrder.payment?.emiDetails?.isEmi === true,
+            orderStatus: updatedOrder.orderStatus,
+            grandTotal: updatedOrder.pricing?.grandTotal
+          });
+        } catch (bErr) {
+          console.warn('[Broadcast Warning]', bErr.message);
         }
       }
     }

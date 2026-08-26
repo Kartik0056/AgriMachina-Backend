@@ -2,6 +2,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const InventoryLog = require('../models/InventoryLog');
 const { logAuditAction } = require('../services/auditService');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 const getAllOrders = async (req, res) => {
   try {
@@ -119,6 +120,23 @@ const updateOrderStatus = async (req, res) => {
     }
 
     await order.save();
+
+    // Broadcast live update so customer dashboard & tracking page update without refresh
+    try {
+      broadcastRealtimeEvent('ORDER_STATUS_CHANGED', {
+        orderId: order._id,
+        orderNumber: order.orderNumber,
+        userId: String(order.user),
+        oldStatus,
+        newStatus: status,
+        orderStatus: status,
+        tracking: order.tracking,
+        payment: order.payment,
+        timestamp: new Date()
+      });
+    } catch (bErr) {
+      console.warn('[Broadcast Warning]', bErr.message);
+    }
 
     await logAuditAction({
       admin: req.admin,

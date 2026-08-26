@@ -6,10 +6,12 @@ const {
   uploadChatFiles,
   getMyTickets,
   getTicketDetails,
+  markTicketAsReadByUser,
   sendUserMessage,
   getUnreadCount,
   adminGetTickets,
   adminGetTicketDetails,
+  adminMarkTicketAsRead,
   adminSendReply,
   adminUpdateTicketStatus
 } = require('../controllers/supportController');
@@ -53,6 +55,9 @@ router.get('/unread-count', requireUserAuth, getUnreadCount);
 // Get single ticket details
 router.get('/tickets/:id', requireUserAuth, getTicketDetails);
 
+// Explicitly mark ticket as read by customer
+router.put('/tickets/:id/read', requireUserAuth, markTicketAsReadByUser);
+
 // Send reply in ticket
 router.post('/tickets/:id/message', requireUserAuth, sanitizeInput, sendUserMessage);
 
@@ -65,6 +70,9 @@ router.get('/admin/tickets', requireAdminAuth, adminGetTickets);
 
 // Admin get ticket details
 router.get('/admin/tickets/:id', requireAdminAuth, adminGetTicketDetails);
+
+// Explicitly mark ticket as read by admin
+router.put('/admin/tickets/:id/read', requireAdminAuth, adminMarkTicketAsRead);
 
 // Admin send reply
 router.post('/admin/tickets/:id/reply', requireAdminAuth, sanitizeInput, adminSendReply);

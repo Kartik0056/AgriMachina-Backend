@@ -143,10 +143,53 @@ const getTicketDetails = async (req, res) => {
     if (ticket.unreadByUser > 0) {
       ticket.unreadByUser = 0;
       await ticket.save();
+
+      try {
+        broadcastRealtimeEvent('TICKET_UPDATED', {
+          ticketId: ticket._id,
+          ticketNumber: ticket.ticketNumber,
+          type: 'ticket_read_by_user',
+          unreadByUser: 0
+        });
+      } catch (e) {}
     }
 
     return res.status(200).json({
       success: true,
+      ticket
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Farmer explicitly marks a ticket as read
+const markTicketAsReadByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ticket = await SupportTicket.findById(id);
+
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found.' });
+    }
+
+    if (ticket.unreadByUser > 0) {
+      ticket.unreadByUser = 0;
+      await ticket.save();
+
+      try {
+        broadcastRealtimeEvent('TICKET_UPDATED', {
+          ticketId: ticket._id,
+          ticketNumber: ticket.ticketNumber,
+          type: 'ticket_read_by_user',
+          unreadByUser: 0
+        });
+      } catch (e) {}
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Ticket marked as read by user.',
       ticket
     });
   } catch (error) {
@@ -306,10 +349,53 @@ const adminGetTicketDetails = async (req, res) => {
     if (ticket.unreadByAdmin > 0) {
       ticket.unreadByAdmin = 0;
       await ticket.save();
+
+      try {
+        broadcastRealtimeEvent('TICKET_UPDATED', {
+          ticketId: ticket._id,
+          ticketNumber: ticket.ticketNumber,
+          type: 'ticket_read_by_admin',
+          unreadByAdmin: 0
+        });
+      } catch (e) {}
     }
 
     return res.status(200).json({
       success: true,
+      ticket
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin explicitly marks ticket as read
+const adminMarkTicketAsRead = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ticket = await SupportTicket.findById(id);
+
+    if (!ticket) {
+      return res.status(404).json({ success: false, message: 'Ticket not found.' });
+    }
+
+    if (ticket.unreadByAdmin > 0) {
+      ticket.unreadByAdmin = 0;
+      await ticket.save();
+
+      try {
+        broadcastRealtimeEvent('TICKET_UPDATED', {
+          ticketId: ticket._id,
+          ticketNumber: ticket.ticketNumber,
+          type: 'ticket_read_by_admin',
+          unreadByAdmin: 0
+        });
+      } catch (e) {}
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Ticket marked as read by admin.',
       ticket
     });
   } catch (error) {
@@ -416,10 +502,12 @@ module.exports = {
   uploadChatFiles,
   getMyTickets,
   getTicketDetails,
+  markTicketAsReadByUser,
   sendUserMessage,
   getUnreadCount,
   adminGetTickets,
   adminGetTicketDetails,
+  adminMarkTicketAsRead,
   adminSendReply,
   adminUpdateTicketStatus
 };

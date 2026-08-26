@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const InventoryLog = require('../models/InventoryLog');
+const { broadcastRealtimeEvent } = require('../services/realtimeService');
 
 const createOrder = async (req, res) => {
   try {
@@ -125,6 +126,22 @@ const createOrder = async (req, res) => {
         reason: `Order #${order.orderNumber}`,
         order: order._id
       }).save();
+    }
+
+    // Broadcast Real-time event to Admin and User clients
+    try {
+      broadcastRealtimeEvent('ORDER_CREATED', {
+        orderId: order._id,
+        orderNumber: order.orderNumber,
+        userId: String(order.user),
+        customerName: order.customerName,
+        paymentMethod: order.payment?.method,
+        isEmi: (order.payment?.method || '').toLowerCase().includes('emi') || order.payment?.emiDetails?.isEmi === true,
+        grandTotal: order.pricing?.grandTotal,
+        orderStatus: order.orderStatus
+      });
+    } catch (broadcastErr) {
+      console.warn('[Broadcast Warning]', broadcastErr.message);
     }
 
     return res.status(201).json({

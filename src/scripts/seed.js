@@ -610,82 +610,16 @@ const seedDatabase = async () => {
 
     console.log('[Seeder] Seeded 5 comprehensive machinery products.');
 
-    // 5. Seed Delivered Order with User 1 for Product 1 to enable Verified Reviews
-    console.log('[Seeder] Seeding Delivered Orders & Verified Reviews...');
-    const order1 = new Order({
-      orderNumber: 'AG-10291-784',
-      user: user1._id,
-      customerName: user1.name,
-      customerEmail: user1.email,
-      customerPhone: user1.phone,
-      items: [
-        {
-          product: product1._id,
-          name: product1.name,
-          sku: product1.sku,
-          price: product1.sellingPrice,
-          mrp: product1.mrp,
-          quantity: 1,
-          image: product1.mainImage.url,
-          gstPercent: 12,
-          gstAmount: Math.round((product1.sellingPrice * 12) / 100),
-          subtotal: product1.sellingPrice
-        }
-      ],
-      pricing: {
-        subtotal: product1.sellingPrice,
-        gstTotal: Math.round((product1.sellingPrice * 12) / 100),
-        shippingFee: 0,
-        discountTotal: 0,
-        grandTotal: product1.sellingPrice
-      },
-      shippingAddress: {
-        fullName: user1.name,
-        phone: user1.phone,
-        street: 'Farm Plot #14, Gondal Highway',
-        villageCity: 'Gondal',
-        district: 'Rajkot',
-        state: 'Gujarat',
-        pincode: '360001'
-      },
-      payment: {
-        method: 'EMI',
-        status: 'Paid',
-        emiDetails: {
-          isEmi: true,
-          tenureMonths: 12,
-          monthlyEmi: 3420,
-          interestRate: 13.5,
-          downPayment: 3999,
-          financePartner: 'HDFC Kisan Finance'
-        }
-      },
-      orderStatus: 'Delivered',
-      deliveredAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // Delivered 7 days ago
-      tracking: {
-        courierName: 'AgriLogistics Express',
-        trackingNumber: 'AGX98273641',
-        estimatedDelivery: 'Delivered on August 15, 2026',
-        statusUpdates: [
-          { status: 'Confirmed', note: 'Order placed with HDFC Kisan EMI', timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000) },
-          { status: 'Shipped', note: 'Dispatched from Gujarat Central Hub', timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000) },
-          { status: 'Delivered', note: 'Delivered at farm gate. Farmer received demonstration.', timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-        ]
-      },
-      reviewedProductIds: [product1._id]
-    });
-
-    await order1.save();
-
-    // 6. Seed Verified Review for Product 1
+    // 5. Seed Customer Verified Review for Product 1 (No fake static orders seeded)
+    console.log('[Seeder] Seeding Verified Product Reviews...');
     const review1 = new Review({
       product: product1._id,
       user: user1._id,
       userName: 'Ramesh Patel (Cotton Farmer)',
-      order: order1._id,
+      order: null,
       rating: 5,
       title: 'Remarkable machine! Saved 4 laborers per acre in my cotton farm',
-      comment: 'I purchased the AgriPro AV-708 for my 8-acre cotton and vegetable farm in Rajkot. The 7HP engine starts on the first gentle pull. The 32 curved blades loosen black cotton soil deeply without clogging. The EMI process with HDFC was smooth and approved in 15 minutes. Highly recommended for every Indian farmer!',
+      comment: 'I purchased the AgriPro AV-708 for my 8-acre cotton and vegetable farm in Rajkot. The 7HP engine starts on the first gentle pull. The 32 curved blades loosen black cotton soil deeply without clogging. Highly recommended for every Indian farmer!',
       farmContext: {
         farmType: 'Cotton & Vegetable Farm',
         cropGrown: 'Cotton, Chilli & Tomato',
@@ -698,7 +632,7 @@ const seedDatabase = async () => {
       status: 'Approved',
       helpfulVotes: 24,
       moderatedAt: new Date(),
-      moderationNotes: 'Verified delivered order in Rajkot Gujarat.'
+      moderationNotes: 'Verified review in Rajkot Gujarat.'
     });
 
     await review1.save();

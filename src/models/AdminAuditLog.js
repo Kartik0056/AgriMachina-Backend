@@ -40,13 +40,13 @@ const adminAuditLogSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  timestamp: {
+    timestamp: {
     type: Date,
     default: Date.now,
     index: true
   }
 }, {
-  timestamps: false
+  timestamps: true
 });
 
 module.exports = mongoose.model('AdminAuditLog', adminAuditLogSchema);
