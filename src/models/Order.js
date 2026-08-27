@@ -8,6 +8,8 @@ const orderItemSchema = new mongoose.Schema({
   },
   name: { type: String, required: true },
   sku: { type: String, required: true },
+  variantName: { type: String, default: '' },
+  unit: { type: String, default: '' },
   price: { type: Number, required: true },
   mrp: { type: Number, required: true },
   quantity: { type: Number, required: true, min: 1 },

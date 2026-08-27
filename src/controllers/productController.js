@@ -10,6 +10,8 @@ const getPublicProducts = async (req, res) => {
       subcategory,
       brand,
       idealFor,
+      unit,
+      productType,
       minPrice,
       maxPrice,
       search,
@@ -31,7 +33,19 @@ const getPublicProducts = async (req, res) => {
       query.subcategory = new RegExp(`^${ampVariant}$`, 'i');
     }
     if (brand) {
-      query.brand = new RegExp(`^${brand.trim()}$`, 'i');
+      const brandsArray = brand.split(',').map(b => b.trim()).filter(Boolean);
+      if (brandsArray.length === 1) {
+        const escaped = brandsArray[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        query.brand = new RegExp(`^${escaped}$`, 'i');
+      } else if (brandsArray.length > 1) {
+        query.brand = { $in: brandsArray.map(b => new RegExp(`^${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i')) };
+      }
+    }
+    if (unit) {
+      query.unit = new RegExp(`^${unit.trim()}$`, 'i');
+    }
+    if (productType) {
+      query.productType = new RegExp(`^${productType.trim()}$`, 'i');
     }
     if (idealFor) {
       query.idealFor = { $in: [new RegExp(idealFor.trim(), 'i')] };
@@ -47,10 +61,16 @@ const getPublicProducts = async (req, res) => {
       const searchRegex = new RegExp(search.trim(), 'i');
       query.$or = [
         { name: searchRegex },
-        { sku: searchRegex },
         { brand: searchRegex },
+        { sku: searchRegex },
         { modelNumber: searchRegex },
         { category: searchRegex },
+        { subcategory: searchRegex },
+        { unit: searchRegex },
+        { unitDisplay: searchRegex },
+        { 'variants.name': searchRegex },
+        { 'variants.sku': searchRegex },
+        { 'specifications.value': searchRegex },
         { shortDescription: searchRegex }
       ];
     }
@@ -82,7 +102,7 @@ const getPublicProducts = async (req, res) => {
       .sort(sortOptions)
       .skip(skip)
       .limit(Number(limit))
-      .select('name slug brand modelNumber sku category subcategory mrp sellingPrice discountPercent gstPercent stockStatus mainImage ratings emi idealFor shortDescription isPublished isDealOfTheDay dealBadge dealEndsAt hasExtraDiscount extraDiscountType extraDiscountValue extraDiscountLabel effectivePrice')
+      .select('name slug brand modelNumber sku productType category subcategory unit netQuantity unitDisplay variants mrp sellingPrice discountPercent gstPercent stockStatus mainImage ratings emi idealFor shortDescription isPublished isDealOfTheDay dealBadge dealEndsAt hasExtraDiscount extraDiscountType extraDiscountValue extraDiscountLabel effectivePrice')
       .lean();
 
     return res.status(200).json({

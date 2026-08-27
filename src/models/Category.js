@@ -41,6 +41,21 @@ const categorySchema = new mongoose.Schema({
   features: [{
     type: String
   }],
+  categoryType: {
+    type: String,
+    default: 'General',
+    trim: true
+  },
+  unitType: {
+    type: String,
+    default: 'general',
+    trim: true
+  },
+  specTemplate: [{
+    group: { type: String, default: 'GENERAL' },
+    name: { type: String, required: true },
+    defaultUnit: { type: String, default: '' }
+  }],
   subcategories: [{
     name: { type: String, required: true },
     slug: { type: String, required: true },

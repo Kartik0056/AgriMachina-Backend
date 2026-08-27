@@ -114,6 +114,63 @@ const faqItemSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
+const variantItemSchema = new mongoose.Schema({
+  sku: {
+    type: String,
+    trim: true,
+    uppercase: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true // e.g. "100g", "250g", "500g", "1kg" or "500ml", "1L", "5L" or "7HP Petrol"
+  },
+  unit: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  quantity: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  mrp: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  sellingPrice: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  discountPercent: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 100
+  },
+  stockQuantity: {
+    type: Number,
+    default: 10,
+    min: 0
+  },
+  stockStatus: {
+    type: String,
+    enum: ['IN STOCK', 'LOW STOCK', 'OUT OF STOCK'],
+    default: 'IN STOCK'
+  },
+  image: {
+    type: String,
+    default: ''
+  },
+  isDefault: {
+    type: Boolean,
+    default: false
+  }
+}, { _id: true });
+
 const productSchema = new mongoose.Schema({
   // 1. Basic Information
   name: {
@@ -122,6 +179,22 @@ const productSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
+  unit: {
+    type: String,
+    default: 'unit', // gm, kg, mg, ml, ltr, pcs, pack, box, bottle, can, set, meter, HP, watt, unit
+    trim: true
+  },
+  netQuantity: {
+    type: String,
+    default: '',
+    trim: true // e.g. "500", "1", "250", "5"
+  },
+  unitDisplay: {
+    type: String,
+    default: '',
+    trim: true // e.g. "500 gm", "1 kg", "1 Ltr", "7 HP"
+  },
+  variants: [variantItemSchema],
   slug: {
     type: String,
     required: true,
@@ -557,13 +630,37 @@ productSchema.pre('save', function (next) {
     }
   }
 
+  // Unit display auto-format
+  if (this.netQuantity && this.unit && !this.unitDisplay) {
+    this.unitDisplay = `${this.netQuantity} ${this.unit}`;
+  }
+
+  // Variant calculations
+  if (Array.isArray(this.variants) && this.variants.length > 0) {
+    this.variants.forEach(v => {
+      if (v.mrp > 0 && v.sellingPrice > 0 && v.mrp >= v.sellingPrice) {
+        v.discountPercent = Math.round(((v.mrp - v.sellingPrice) / v.mrp) * 100);
+      }
+      if (v.stockQuantity <= 0) {
+        v.stockStatus = 'OUT OF STOCK';
+      } else if (v.stockQuantity <= 5) {
+        v.stockStatus = 'LOW STOCK';
+      } else {
+        v.stockStatus = 'IN STOCK';
+      }
+      if (!v.sku && this.sku) {
+        v.sku = `${this.sku}-${(v.name || 'VAR').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()}`;
+      }
+    });
+  }
+
   // Auto SEO Defaults if not filled
   if (!this.seo) this.seo = {};
   if (!this.seo.seoTitle) {
-    this.seo.seoTitle = `${this.name} - ${this.brand} | Buy Agricultural Machinery Online`;
+    this.seo.seoTitle = `${this.name} - ${this.brand} | Buy ${this.category || 'Online'}`;
   }
   if (!this.seo.metaDescription) {
-    this.seo.metaDescription = `Buy high performance ${this.name} by ${this.brand} (${this.category}). Fast pan-India delivery, verified warranty & easy EMI options at best price.`;
+    this.seo.metaDescription = `Buy premium ${this.name} by ${this.brand} (${this.category}). Fast delivery, verified quality & best price.`;
   }
   if (!this.seo.focusKeyword) {
     this.seo.focusKeyword = `${this.name} ${this.brand}`.toLowerCase();
@@ -586,6 +683,8 @@ productSchema.index({
   sku: 'text',
   category: 'text',
   subcategory: 'text',
+  unit: 'text',
+  unitDisplay: 'text',
   shortDescription: 'text'
 });
 
