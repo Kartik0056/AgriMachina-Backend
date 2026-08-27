@@ -33,16 +33,85 @@ const seedDatabase = async () => {
     console.log('[Seeder] Seeding Categories...');
     const categories = await Category.insertMany([
       {
+        name: 'Spices & Masala',
+        slug: 'spices-masala',
+        description: 'Authentic 100% pure whole spices, ground masala powders, and gourmet blended spices direct from certified farms.',
+        icon: '🌶️',
+        image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80',
+        categoryType: 'Spices & Groceries',
+        unitType: 'weight',
+        startingPrice: '₹45',
+        features: [
+          '100% Pure & Authentic Spices',
+          'Agmark & FSSAI Certified',
+          'No Added Artificial Colors or Preservatives',
+          'Aroma Lock Multi-Layer Packaging'
+        ],
+        subcategories: [
+          { name: 'Ground Masala Powders', slug: 'ground-masala', description: 'Pure Haldi, Mirch, Dhaniya & Jeera powders' },
+          { name: 'Blended Gourmet Masala', slug: 'blended-masala', description: 'Garam Masala, Chana Masala, Pav Bhaji & Biryani blends' },
+          { name: 'Whole Spices (Khada Masala)', slug: 'whole-spices', description: 'Cardamom, Cloves, Black Pepper & Cinnamon sticks' }
+        ],
+        order: 1
+      },
+      {
+        name: 'Organic Groceries & Oils',
+        slug: 'organic-groceries-oils',
+        description: 'Cold-pressed kachi ghani oils, unpolished organic pulses, pure desi ghee, and premium grains.',
+        icon: 'ShoppingBag',
+        image: 'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=600&q=80',
+        categoryType: 'Spices & Groceries',
+        unitType: 'volume',
+        startingPrice: '₹85',
+        features: [
+          'Cold Pressed Wood Churned (Kachi Ghani)',
+          'Chemical & Hexane Free Extraction',
+          'Direct Farm Sourced Organic Pulses',
+          'Rich in Natural Nutrients & Antioxidants'
+        ],
+        subcategories: [
+          { name: 'Cold-Pressed Oils', slug: 'cold-pressed-oils', description: 'Pure Mustard, Groundnut, Sesame & Coconut oils' },
+          { name: 'Organic Pulses & Dals', slug: 'organic-pulses', description: 'Unpolished Arhar, Moong, Chana & Urad' },
+          { name: 'Farm Fresh Ghee & Honey', slug: 'ghee-honey', description: 'A2 Vedic Bilona Ghee & Raw Wildflower Honey' }
+        ],
+        order: 2
+      },
+      {
+        name: 'Electronics & Motors',
+        slug: 'electronics-motors',
+        description: 'Submersible water pump motors, smart auto-switch starter panels, and solar MPPT drive inverters.',
+        icon: 'Cpu',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+        categoryType: 'Electronics & Appliances',
+        unitType: 'power',
+        startingPrice: '₹2,499',
+        features: [
+          '100% Pure Copper Wound Motor Core',
+          'Thermal Overload & Dry Run Auto Protection',
+          'ISI / BIS Standard Certified Components',
+          'Pan-India 1-Year Comprehensive Warranty'
+        ],
+        subcategories: [
+          { name: 'Submersible Pump Motors', slug: 'submersible-motors', description: 'V4 & V6 oil-cooled / water-cooled pump motors' },
+          { name: 'Smart Starter Panels', slug: 'starter-panels', description: 'Digital GSM Mobile Controlled Motor Starters' },
+          { name: 'Solar MPPT Inverters', slug: 'solar-inverters', description: 'High-efficiency variable frequency pump drives' }
+        ],
+        order: 3
+      },
+      {
         name: 'Power Weeders',
         slug: 'power-weeders',
         description: 'High-torque petrol and diesel weeders for soil loosening, intercultural tilling, and weed removal.',
         icon: 'Tractor',
         image: 'https://images.unsplash.com/photo-1592878904946-b3cd8ae243d0?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'power',
+        startingPrice: '₹38,499',
         subcategories: [
           { name: 'Petrol Power Weeders', slug: 'petrol-weeders', description: 'Lightweight and agile weeders for vegetable farms' },
           { name: 'Diesel Heavy Weeders', slug: 'diesel-weeders', description: 'High-torque weeders for hard soil and orchards' }
         ],
-        order: 1
+        order: 4
       },
       {
         name: 'Rotavators & Tillers',
@@ -50,11 +119,14 @@ const seedDatabase = async () => {
         description: 'Tractor attachments and motorized tillers for rapid seedbed preparation and clod breaking.',
         icon: 'Cog',
         image: 'https://images.unsplash.com/photo-1589923188900-85dae523342b?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'power',
+        startingPrice: '₹24,999',
         subcategories: [
           { name: 'Mini Rotary Tillers', slug: 'mini-tillers' },
           { name: 'Tractor-Driven Rotavators', slug: 'tractor-rotavators' }
         ],
-        order: 2
+        order: 5
       },
       {
         name: 'Brush Cutters & Harvesters',
@@ -62,11 +134,14 @@ const seedDatabase = async () => {
         description: 'Heavy duty 2-stroke and 4-stroke crop cutters, grass trimmers, and paddy reapers.',
         icon: 'Scissors',
         image: 'https://images.unsplash.com/photo-1595855759920-86582396756a?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'power',
+        startingPrice: '₹12,499',
         subcategories: [
           { name: 'Backpack Brush Cutters', slug: 'backpack-cutters' },
           { name: 'Side-Pack Cutters', slug: 'sidepack-cutters' }
         ],
-        order: 3
+        order: 6
       },
       {
         name: 'Water Pumps & Solar Irrigation',
@@ -74,11 +149,14 @@ const seedDatabase = async () => {
         description: 'Solar powered submersible pumps, centrifugal irrigation pumps, and drip systems.',
         icon: 'Droplets',
         image: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'power',
+        startingPrice: '₹18,999',
         subcategories: [
           { name: 'Solar Submersible Pumps', slug: 'solar-pumps' },
           { name: 'Petrol Water Pumps', slug: 'petrol-pumps' }
         ],
-        order: 4
+        order: 7
       },
       {
         name: 'Agricultural Sprayers',
@@ -86,11 +164,14 @@ const seedDatabase = async () => {
         description: 'Battery operated, knapsack manual, and engine power sprayers for pesticide application.',
         icon: 'Sparkles',
         image: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'volume',
+        startingPrice: '₹2,799',
         subcategories: [
           { name: '16L Battery Sprayers', slug: 'battery-sprayers' },
           { name: 'Tractor Mount Sprayers', slug: 'tractor-sprayers' }
         ],
-        order: 5
+        order: 8
       },
       {
         name: 'Chaff Cutters & Threshers',
@@ -98,19 +179,26 @@ const seedDatabase = async () => {
         description: 'Motorized fodder cutters and grain threshers for livestock and post-harvest processing.',
         icon: 'Layers',
         image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&q=80',
+        categoryType: 'Agricultural Machinery',
+        unitType: 'power',
+        startingPrice: '₹19,499',
         subcategories: [
           { name: 'Electric Chaff Cutters', slug: 'electric-chaff-cutters' }
         ],
-        order: 6
+        order: 9
       }
     ]);
 
     // 2. Seed Brands
     console.log('[Seeder] Seeding Brands...');
     const brands = await Brand.insertMany([
+      { name: 'Everest', slug: 'everest', countryOfOrigin: 'India', description: 'India’s most trusted spice brand with pure whole & ground spices.' },
+      { name: 'Tata Sampann', slug: 'tata-sampann', countryOfOrigin: 'India', description: 'Naturally rich, unadulterated spices and farm-sourced organic pulses.' },
+      { name: 'MDH', slug: 'mdh', countryOfOrigin: 'India', description: 'Classic authentic Indian spice blends and culinary powders.' },
+      { name: 'Fortune Foods', slug: 'fortune-foods', countryOfOrigin: 'India', description: 'Finest cold-pressed kachi ghani oils and wholesome kitchen staples.' },
+      { name: 'Havells', slug: 'havells', countryOfOrigin: 'India', description: 'Heavy-duty industrial and agricultural electric submersible motors & drives.' },
       { name: 'AgriPro Master', slug: 'agripro-master', countryOfOrigin: 'India', description: 'Pioneering agricultural machinery for Indian farm terrain.' },
       { name: 'SunAgro Tech', slug: 'sunagro-tech', countryOfOrigin: 'India', description: 'Renewable solar pump systems and water solutions.' },
-      { name: 'KisanKrafts', slug: 'kisankrafts', countryOfOrigin: 'India', description: 'Trusted farm equipment brand nationwide.' },
       { name: 'Honda Agro Power', slug: 'honda-agro-power', countryOfOrigin: 'Japan', description: 'World-class 4-stroke OHV engines for agricultural weeders.' },
       { name: 'Shaktiman FarmTech', slug: 'shaktiman-farmtech', countryOfOrigin: 'India', description: 'Heavy-duty rotary tillers and tractor implements.' }
     ]);
@@ -592,13 +680,260 @@ const seedDatabase = async () => {
       }
     });
 
+    // Product 6: Everest Shahi Garam Masala
+    const product6 = new Product({
+      name: 'Everest Shahi Garam Masala (Special Pure Blend)',
+      slug: 'everest-shahi-garam-masala',
+      brand: 'Everest',
+      modelNumber: 'EGM-500',
+      sku: 'EVR-GM-500G',
+      productType: 'Spices & Groceries',
+      category: 'Spices & Masala',
+      subcategory: 'Blended Gourmet Masala',
+      unit: 'gm',
+      netQuantity: '500',
+      unitDisplay: '500 gm',
+      variants: [
+        { name: '100g Pack', unit: 'gm', quantity: '100', mrp: 55, sellingPrice: 45, discountPercent: 18, stockQuantity: 150, stockStatus: 'IN STOCK', sku: 'EVR-GM-100G', isDefault: false },
+        { name: '250g Pack', unit: 'gm', quantity: '250', mrp: 125, sellingPrice: 105, discountPercent: 16, stockQuantity: 100, stockStatus: 'IN STOCK', sku: 'EVR-GM-250G', isDefault: false },
+        { name: '500g Pack', unit: 'gm', quantity: '500', mrp: 230, sellingPrice: 195, discountPercent: 15, stockQuantity: 80, stockStatus: 'IN STOCK', sku: 'EVR-GM-500G', isDefault: true },
+        { name: '1 Kg Family Pack', unit: 'kg', quantity: '1', mrp: 440, sellingPrice: 375, discountPercent: 15, stockQuantity: 50, stockStatus: 'IN STOCK', sku: 'EVR-GM-1KG', isDefault: false }
+      ],
+      shortDescription: 'Exquisite aromatic blend of 13 hand-selected whole spices, slow roasted and ground to perfection for authentic Indian cuisine.',
+      description: `
+        <h3>Aromatic Royal Spices for Authentic Taste</h3>
+        <p><strong>Everest Shahi Garam Masala</strong> is made from finely selected premium Indian spices including green cardamom, mace, cinnamon, black pepper, and cloves.</p>
+        <h4>Quality & Processing Standards</h4>
+        <ul>
+          <li><strong>Cryogenic Cold Grinding:</strong> Retains essential volatile oils and maximum natural aroma.</li>
+          <li><strong>Zero Preservatives:</strong> 100% pure vegetarian spice mix with no filler starches.</li>
+          <li><strong>Agmark Grade A Certified:</strong> Rigorously tested for purity and high pungency.</li>
+        </ul>
+      `,
+      status: 'Published',
+      hsnCode: '0910',
+      manufacturer: 'Everest Food Products Pvt Ltd',
+      countryOfOrigin: 'India',
+      mrp: 230,
+      sellingPrice: 195,
+      costPrice: 130,
+      gstPercent: 5,
+      taxIncluded: true,
+      stockQuantity: 80,
+      lowStockThreshold: 15,
+      stockStatus: 'IN STOCK',
+      warehouse: 'Mumbai Spice Hub',
+      mainImage: {
+        url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
+        alt: 'Everest Shahi Garam Masala Powder and Whole Spices',
+        caption: 'Everest Shahi Garam Masala 100% Pure Blend'
+      },
+      gallery: [
+        { url: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80', tag: '01 Main', order: 1 },
+        { url: 'https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=800&q=80', tag: '02 Spices', order: 2 }
+      ],
+      specifications: [
+        { group: 'GENERAL', name: 'Form / State', value: 'Fine Ground Powder', unit: '', order: 1 },
+        { group: 'GENERAL', name: 'Net Quantity', value: '500', unit: 'gm', order: 2 },
+        { group: 'INGREDIENTS', name: 'Ingredients', value: 'Coriander, Cumin, Black Pepper, Cardamom, Clove, Cinnamon, Nutmeg', unit: '', order: 3 },
+        { group: 'STORAGE & SHELF LIFE', name: 'Shelf Life', value: '12', unit: 'Months', order: 4 },
+        { group: 'CERTIFICATIONS', name: 'FSSAI License', value: '10012022000295', unit: '', order: 5 }
+      ],
+      idealFor: ['Spices & Food Processing', 'Commercial & Retail'],
+      whatsIncluded: ['500g Aroma-Sealed Foil Pouch with Zip Lock'],
+      shipping: {
+        available: true,
+        panIndia: true,
+        estimatedDeliveryDays: '2 - 4 Business Days',
+        shippingCharge: 40,
+        freeShippingThreshold: 499,
+        installationAvailable: false
+      },
+      warranty: {
+        period: '100% Freshness Guarantee',
+        type: 'Money Back Quality Guarantee',
+        provider: 'Everest Care',
+        terms: 'Replacement or refund if freshness seal is compromised upon delivery.'
+      },
+      emi: { enabled: false },
+      ratings: {
+        averageRating: 4.9,
+        totalReviews: 42,
+        ratingBreakdown: { 5: 38, 4: 4, 3: 0, 2: 0, 1: 0 }
+      }
+    });
+
+    // Product 7: Tata Sampann Pure Turmeric Powder
+    const product7 = new Product({
+      name: 'Tata Sampann 100% Pure Haldi (Turmeric Powder with Natural Curcumin)',
+      slug: 'tata-sampann-pure-turmeric-haldi',
+      brand: 'Tata Sampann',
+      modelNumber: 'TS-HALDI-500',
+      sku: 'TS-HALDI-500G',
+      productType: 'Spices & Groceries',
+      category: 'Spices & Masala',
+      subcategory: 'Ground Masala Powders',
+      unit: 'gm',
+      netQuantity: '500',
+      unitDisplay: '500 gm',
+      variants: [
+        { name: '200g Pack', unit: 'gm', quantity: '200', mrp: 55, sellingPrice: 48, discountPercent: 12, stockQuantity: 120, stockStatus: 'IN STOCK', sku: 'TS-HALDI-200G', isDefault: false },
+        { name: '500g Pack', unit: 'gm', quantity: '500', mrp: 135, sellingPrice: 115, discountPercent: 15, stockQuantity: 90, stockStatus: 'IN STOCK', sku: 'TS-HALDI-500G', isDefault: true },
+        { name: '1 Kg Value Pack', unit: 'kg', quantity: '1', mrp: 260, sellingPrice: 220, discountPercent: 15, stockQuantity: 60, stockStatus: 'IN STOCK', sku: 'TS-HALDI-1KG', isDefault: false }
+      ],
+      shortDescription: 'Farm-sourced golden turmeric powder with guaranteed minimum 3% natural curcumin content for maximum health benefits and rich aroma.',
+      description: `
+        <h3>Golden Purity with Natural Curcumin Advantage</h3>
+        <p><strong>Tata Sampann Turmeric Powder</strong> is sourced directly from certified organic farms in Salem and Erode. Curcumin is naturally retained without oil depletion.</p>
+      `,
+      status: 'Published',
+      hsnCode: '0910',
+      manufacturer: 'Tata Consumer Products Ltd',
+      countryOfOrigin: 'India',
+      mrp: 135,
+      sellingPrice: 115,
+      costPrice: 75,
+      gstPercent: 5,
+      taxIncluded: true,
+      stockQuantity: 90,
+      lowStockThreshold: 15,
+      stockStatus: 'IN STOCK',
+      warehouse: 'Bengaluru Agro Hub',
+      mainImage: {
+        url: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=800&q=80',
+        alt: 'Tata Sampann Golden Turmeric Powder',
+        caption: 'Tata Sampann 100% Pure Haldi Powder'
+      },
+      specifications: [
+        { group: 'GENERAL', name: 'Form', value: 'Pure Ground Powder', unit: '', order: 1 },
+        { group: 'GENERAL', name: 'Curcumin Content', value: 'Min. 3%', unit: '', order: 2 },
+        { group: 'STORAGE & SHELF LIFE', name: 'Shelf Life', value: '12', unit: 'Months', order: 3 },
+        { group: 'CERTIFICATIONS', name: 'FSSAI License', value: '10014031001025', unit: '', order: 4 }
+      ],
+      idealFor: ['Spices & Food Processing', 'Commercial & Retail'],
+      whatsIncluded: ['500g Air-Tight Zipper Pouch'],
+      shipping: { available: true, panIndia: true, estimatedDeliveryDays: '2 - 4 Business Days', shippingCharge: 40, freeShippingThreshold: 499 },
+      warranty: { period: '100% Purity Certified', type: 'FSSAI Guaranteed', provider: 'Tata Sampann', terms: 'Quality guaranteed' },
+      emi: { enabled: false },
+      ratings: { averageRating: 4.8, totalReviews: 28, ratingBreakdown: { 5: 24, 4: 3, 3: 1, 2: 0, 1: 0 } }
+    });
+
+    // Product 8: Fortune Cold Pressed Mustard Oil
+    const product8 = new Product({
+      name: 'Fortune Kachi Ghani Pure Mustard Oil (Cold Pressed Wood Churned)',
+      slug: 'fortune-kachi-ghani-mustard-oil',
+      brand: 'Fortune Foods',
+      modelNumber: 'FT-MUST-1L',
+      sku: 'FT-MUST-1L',
+      productType: 'Spices & Groceries',
+      category: 'Organic Groceries & Oils',
+      subcategory: 'Cold-Pressed Oils',
+      unit: 'ltr',
+      netQuantity: '1',
+      unitDisplay: '1 Ltr',
+      variants: [
+        { name: '500 ml Bottle', unit: 'ml', quantity: '500', mrp: 95, sellingPrice: 85, discountPercent: 10, stockQuantity: 100, stockStatus: 'IN STOCK', sku: 'FT-MUST-500ML', isDefault: false },
+        { name: '1 Liter Jar', unit: 'ltr', quantity: '1', mrp: 185, sellingPrice: 160, discountPercent: 13, stockQuantity: 120, stockStatus: 'IN STOCK', sku: 'FT-MUST-1L', isDefault: true },
+        { name: '5 Liter Can', unit: 'ltr', quantity: '5', mrp: 900, sellingPrice: 780, discountPercent: 13, stockQuantity: 40, stockStatus: 'IN STOCK', sku: 'FT-MUST-5L', isDefault: false }
+      ],
+      shortDescription: 'Traditional cold-pressed mustard oil with pungent natural aroma, Omega-3 fatty acids, and high smoke point for authentic Indian cooking.',
+      description: '<p>Extracted from the first press of premium mustard seeds using traditional Kohlu mechanism to preserve natural antioxidants and pungent taste.</p>',
+      status: 'Published',
+      hsnCode: '1514',
+      manufacturer: 'Adani Wilmar Ltd',
+      countryOfOrigin: 'India',
+      mrp: 185,
+      sellingPrice: 160,
+      costPrice: 110,
+      gstPercent: 5,
+      taxIncluded: true,
+      stockQuantity: 120,
+      lowStockThreshold: 20,
+      stockStatus: 'IN STOCK',
+      warehouse: 'Ahmedabad Warehouse',
+      mainImage: {
+        url: 'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=800&q=80',
+        alt: 'Fortune Kachi Ghani Mustard Oil Bottle',
+        caption: 'Fortune 100% Pure Mustard Oil 1L'
+      },
+      specifications: [
+        { group: 'GENERAL', name: 'Extraction Method', value: 'Cold Pressed (Kachi Ghani)', unit: '', order: 1 },
+        { group: 'GENERAL', name: 'Net Volume', value: '1', unit: 'Liter', order: 2 },
+        { group: 'STORAGE & SHELF LIFE', name: 'Shelf Life', value: '9', unit: 'Months', order: 3 },
+        { group: 'CERTIFICATIONS', name: 'Agmark Grade 1', value: 'Certified', unit: '', order: 4 }
+      ],
+      idealFor: ['Commercial & Retail', 'Spices & Food Processing'],
+      whatsIncluded: ['1 Liter PET Bottle with Tamper Evident Cap'],
+      shipping: { available: true, panIndia: true, estimatedDeliveryDays: '2 - 5 Business Days', shippingCharge: 50, freeShippingThreshold: 499 },
+      warranty: { period: 'Purity Tested', type: 'Agmark Grade 1', provider: 'Fortune Foods', terms: 'Quality guaranteed' },
+      emi: { enabled: false },
+      ratings: { averageRating: 4.7, totalReviews: 19, ratingBreakdown: { 5: 15, 4: 3, 3: 1, 2: 0, 1: 0 } }
+    });
+
+    // Product 9: Havells Heavy-Duty Submersible Motor
+    const product9 = new Product({
+      name: 'Havells 5HP Heavy-Duty Agricultural Submersible Pump Motor',
+      slug: 'havells-5hp-submersible-pump-motor',
+      brand: 'Havells',
+      modelNumber: 'HVL-SUB-50',
+      sku: 'HVL-SUB-5HP',
+      productType: 'Electronics & Appliances',
+      category: 'Electronics & Motors',
+      subcategory: 'Submersible Pump Motors',
+      unit: 'HP',
+      netQuantity: '5',
+      unitDisplay: '5 HP',
+      variants: [
+        { name: '3 HP Single Phase', unit: 'HP', quantity: '3', mrp: 17000, sellingPrice: 14500, discountPercent: 15, stockQuantity: 15, stockStatus: 'IN STOCK', sku: 'HVL-SUB-3HP', isDefault: false },
+        { name: '5 HP Three Phase', unit: 'HP', quantity: '5', mrp: 23500, sellingPrice: 19800, discountPercent: 16, stockQuantity: 20, stockStatus: 'IN STOCK', sku: 'HVL-SUB-5HP', isDefault: true },
+        { name: '7.5 HP High Head', unit: 'HP', quantity: '7.5', mrp: 32000, sellingPrice: 27500, discountPercent: 14, stockQuantity: 10, stockStatus: 'IN STOCK', sku: 'HVL-SUB-7HP', isDefault: false }
+      ],
+      shortDescription: 'V4 100% pure copper-wound water-cooled submersible motor with stainless steel AISI-304 shaft and carbon thrust bearing for borewells up to 450 feet.',
+      description: '<p>High-efficiency continuous duty submersible motor designed to operate with wide voltage fluctuation from 160V to 440V with low power consumption.</p>',
+      status: 'Published',
+      hsnCode: '8501',
+      manufacturer: 'Havells India Ltd',
+      countryOfOrigin: 'India',
+      mrp: 23500,
+      sellingPrice: 19800,
+      costPrice: 14500,
+      gstPercent: 18,
+      taxIncluded: true,
+      stockQuantity: 20,
+      lowStockThreshold: 4,
+      stockStatus: 'IN STOCK',
+      warehouse: 'Noida Central Plant',
+      mainImage: {
+        url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
+        alt: 'Havells Submersible Motor Core',
+        caption: 'Havells 5HP Heavy-Duty Submersible Motor'
+      },
+      specifications: [
+        { group: 'ENGINE & POWER', name: 'Rated Power', value: '5 HP (3.7 kW)', unit: 'HP', order: 1 },
+        { group: 'ELECTRICAL', name: 'Voltage Range', value: '280 - 440 V (3-Phase 50Hz)', unit: 'V', order: 2 },
+        { group: 'ELECTRICAL', name: 'Winding Wire', value: '100% Pure EC Grade Dual Coated Copper', unit: '', order: 3 },
+        { group: 'PERFORMANCE', name: 'Max Head Range', value: '60 - 140', unit: 'Meters', order: 4 },
+        { group: 'DIMENSIONS & WEIGHT', name: 'Shaft Material', value: 'Stainless Steel AISI 410 / 304', unit: '', order: 5 }
+      ],
+      idealFor: ['Large Farms', 'Medium Farms', 'Orchards', 'Vegetable Farming'],
+      whatsIncluded: ['5HP Submersible Motor Unit', 'Waterproof Cable Connector Kit', 'Installation & Wiring Manual', '1-Year Warranty Card'],
+      shipping: { available: true, panIndia: true, estimatedDeliveryDays: '3 - 6 Business Days', shippingCharge: 0, freeShippingThreshold: 4999 },
+      warranty: { period: '1 Year Full Replacement Warranty', type: 'Havells Pan-India Onsite Service', provider: 'Havells India', terms: 'Covers winding burnout and rotor defects.' },
+      emi: { enabled: true, minDownPayment: 0, minMonthlyEmi: 948 },
+      ratings: { averageRating: 4.8, totalReviews: 14, ratingBreakdown: { 5: 12, 4: 2, 3: 0, 2: 0, 1: 0 } }
+    });
+
     // Save all products
     await Promise.all([
       product1.save(),
       product2.save(),
       product3.save(),
       product4.save(),
-      product5.save()
+      product5.save(),
+      product6.save(),
+      product7.save(),
+      product8.save(),
+      product9.save()
     ]);
 
     // Cross-link recommendations & frequently bought together

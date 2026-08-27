@@ -6,17 +6,84 @@ const Product = require('../models/Product');
 
 const regreenCategories = [
   {
+    name: 'Spices & Masala',
+    slug: 'spices-masala',
+    description: 'Authentic 100% pure whole spices, ground masala powders, and gourmet blended spices direct from certified farms.',
+    icon: '🌶️',
+    image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80',
+    categoryType: 'Spices & Groceries',
+    unitType: 'weight',
+    startingPrice: '₹45',
+    features: [
+      '100% Pure & Authentic Spices',
+      'Agmark & FSSAI Certified',
+      'No Added Artificial Colors or Preservatives',
+      'Aroma Lock Multi-Layer Packaging'
+    ],
+    subcategories: [
+      { name: 'Ground Masala Powders', slug: 'ground-masala' },
+      { name: 'Blended Gourmet Masala', slug: 'blended-masala' },
+      { name: 'Whole Spices (Khada Masala)', slug: 'whole-spices' }
+    ],
+    order: 1
+  },
+  {
+    name: 'Organic Groceries & Oils',
+    slug: 'organic-groceries-oils',
+    description: 'Cold-pressed kachi ghani oils, unpolished organic pulses, pure desi ghee, and premium grains.',
+    icon: 'ShoppingBag',
+    image: 'https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=600&q=80',
+    categoryType: 'Spices & Groceries',
+    unitType: 'volume',
+    startingPrice: '₹85',
+    features: [
+      'Cold Pressed Wood Churned (Kachi Ghani)',
+      'Chemical & Hexane Free Extraction',
+      'Direct Farm Sourced Organic Pulses'
+    ],
+    subcategories: [
+      { name: 'Cold-Pressed Oils', slug: 'cold-pressed-oils' },
+      { name: 'Organic Pulses & Dals', slug: 'organic-pulses' },
+      { name: 'Farm Fresh Ghee & Honey', slug: 'ghee-honey' }
+    ],
+    order: 2
+  },
+  {
+    name: 'Electronics & Motors',
+    slug: 'electronics-motors',
+    description: 'Submersible water pump motors, smart auto-switch starter panels, and solar MPPT drive inverters.',
+    icon: 'Cpu',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80',
+    categoryType: 'Electronics & Appliances',
+    unitType: 'power',
+    startingPrice: '₹2,499',
+    features: [
+      '100% Pure Copper Wound Motor Core',
+      'Thermal Overload & Dry Run Auto Protection',
+      'Pan-India 1-Year Comprehensive Warranty'
+    ],
+    subcategories: [
+      { name: 'Submersible Pump Motors', slug: 'submersible-motors' },
+      { name: 'Smart Starter Panels', slug: 'starter-panels' },
+      { name: 'Solar MPPT Inverters', slug: 'solar-inverters' }
+    ],
+    order: 3
+  },
+  {
     name: 'Power Weeder & Tiller',
     slug: 'power-weeder-tiller',
     description: 'High-torque petrol & diesel weeders, rotary cultivators, and mini tillers for soil preparation and inter-row weeding.',
     icon: 'Tractor',
     image: '/images/machinery/power_weeder.jpg',
+    categoryType: 'Agricultural Machinery',
+    unitType: 'power',
+    startingPrice: '₹38,499',
     subcategories: [
       { name: '7HP Petrol Power Weeders', slug: 'petrol-weeders' },
       { name: '9HP Diesel Heavy Tillers', slug: 'diesel-weeders' },
       { name: 'Mini Rotary Cultivators', slug: 'mini-cultivators' }
     ],
-    order: 1
+    order: 4
   },
   {
     name: 'Earth Auger',
