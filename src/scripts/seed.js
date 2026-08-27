@@ -26,7 +26,8 @@ const seedDatabase = async () => {
       Order.deleteMany({}),
       Review.deleteMany({}),
       Coupon.deleteMany({}),
-      InventoryLog.deleteMany({})
+      InventoryLog.deleteMany({}),
+      User.deleteMany({ role: { $ne: 'ADMIN' } })
     ]);
 
     // 1. Seed Categories
