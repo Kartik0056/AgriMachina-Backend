@@ -24,8 +24,23 @@ const categorySchema = new mongoose.Schema({
   },
   icon: {
     type: String,
-    default: 'Tractor'
+    default: '🌱'
   },
+  tagline: {
+    type: String,
+    default: ''
+  },
+  startingPrice: {
+    type: String,
+    default: ''
+  },
+  emiStarting: {
+    type: String,
+    default: ''
+  },
+  features: [{
+    type: String
+  }],
   subcategories: [{
     name: { type: String, required: true },
     slug: { type: String, required: true },

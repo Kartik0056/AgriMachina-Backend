@@ -4,6 +4,8 @@ const {
   getAdminCategories,
   createCategory,
   updateCategory,
+  toggleCategoryActive,
+  reorderCategories,
   deleteCategory,
   getAdminBrands,
   createBrand,
@@ -18,7 +20,9 @@ router.use(requireAdminAuth);
 // Categories
 router.get('/categories', getAdminCategories);
 router.post('/categories', requirePermission('PRODUCT_CREATE'), createCategory);
+router.put('/categories/reorder', requirePermission('PRODUCT_UPDATE'), reorderCategories);
 router.put('/categories/:id', requirePermission('PRODUCT_UPDATE'), updateCategory);
+router.patch('/categories/:id/toggle', requirePermission('PRODUCT_UPDATE'), toggleCategoryActive);
 router.delete('/categories/:id', requirePermission('PRODUCT_DELETE'), deleteCategory);
 
 // Brands
