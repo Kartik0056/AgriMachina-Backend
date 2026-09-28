@@ -157,8 +157,39 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const getOrderInvoice = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('user', 'name email phone')
+      .populate('items.product', 'name sku hsnCode brand mainImage');
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found.' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      invoice: {
+        invoiceNumber: `INV-${order.orderNumber}`,
+        invoiceDate: order.createdAt,
+        company: {
+          name: 'Siddhiva Commerce & Commercial Mart Pvt. Ltd.',
+          brand: 'Siddhiva',
+          gstin: '07AABCY1234F1Z8',
+          phone: '+91 63952 11953',
+          email: 'kartikkumar151998@gmail.com'
+        },
+        order
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllOrders,
   getOrderById,
-  updateOrderStatus
+  updateOrderStatus,
+  getOrderInvoice
 };
