@@ -31,6 +31,7 @@ const couponRoutes = require('./couponRoutes');
 const aiRoutes = require('./aiRoutes');
 const SupportTicket = require('../models/SupportTicket');
 const { handleSSEStream } = require('../services/realtimeService');
+const cacheService = require('../services/cacheService');
 
 // Real-Time Event Stream Endpoint
 router.get('/sync/stream', handleSSEStream);
@@ -64,10 +65,18 @@ router.use('/support', supportRoutes);
 router.use('/coupons', couponRoutes);
 router.use('/ai', aiRoutes);
 
-// Public Category & Brand listings
+// Public Category & Brand listings with O(1) Cache
 router.get('/categories', async (req, res) => {
   try {
-    const categories = await Category.find({ isActive: true }).sort({ order: 1, name: 1 });
+    const cached = cacheService.get('public_categories');
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json({ success: true, categories: cached });
+    }
+
+    const categories = await Category.find({ isActive: true }).sort({ order: 1, name: 1 }).lean();
+    cacheService.set('public_categories', categories, 60);
+    res.setHeader('X-Cache', 'MISS');
     return res.status(200).json({ success: true, categories });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -76,7 +85,15 @@ router.get('/categories', async (req, res) => {
 
 router.get('/brands', async (req, res) => {
   try {
-    const brands = await Brand.find({ isActive: true }).sort({ name: 1 });
+    const cached = cacheService.get('public_brands');
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json({ success: true, brands: cached });
+    }
+
+    const brands = await Brand.find({ isActive: true }).sort({ name: 1 }).lean();
+    cacheService.set('public_brands', brands, 60);
+    res.setHeader('X-Cache', 'MISS');
     return res.status(200).json({ success: true, brands });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -92,7 +109,7 @@ router.post('/contact', sanitizeInput, async (req, res) => {
     // Also auto-create a SupportTicket so Admin Desk can chat and reply to customer!
     const subject = req.body.productTitle
       ? `Product Query: ${req.body.productTitle}`
-      : `${req.body.inquiryType || 'Inquiry'}: ${req.body.machineryInterest || 'General Farm Support'}`;
+      : `${req.body.inquiryType || 'Inquiry'}: ${req.body.productInterest || req.body.categoryInterest || req.body.machineryInterest || 'Eidula Customer Inquiries'}`;
 
     const ticket = new SupportTicket({
       userName: req.body.name,
@@ -110,7 +127,7 @@ router.post('/contact', sanitizeInput, async (req, res) => {
         {
           sender: 'user',
           senderName: req.body.name,
-          text: req.body.message || `Customer inquiry regarding ${req.body.machineryInterest || 'agricultural machinery'}. Farm type: ${req.body.farmType || 'General'}. State: ${req.body.state || 'India'}.`,
+          text: req.body.message || `Customer inquiry regarding ${req.body.productTitle || req.body.interest || 'Eidula catalog'}. Location: ${req.body.city || req.body.state || 'India'}.`,
           images: [],
           videoUrl: '',
           createdAt: new Date()
@@ -122,7 +139,7 @@ router.post('/contact', sanitizeInput, async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: 'Your inquiry has been submitted. Our agricultural machinery expert will contact you shortly.',
+      message: 'Your inquiry has been submitted. Our Eidula product specialist will contact you shortly.',
       contact,
       ticketNumber: ticket.ticketNumber
     });

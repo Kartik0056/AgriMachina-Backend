@@ -292,11 +292,11 @@ const deleteCategory = async (req, res) => {
       });
     }
 
-    // If force delete is explicitly confirmed and products exist, update them to "General Machinery"
+    // If force delete is explicitly confirmed and products exist, update them to "General Retail"
     if (productCount > 0 && force === 'true') {
       await Product.updateMany(
         { category: cat.name },
-        { $set: { category: 'General Machinery', subcategory: '' } }
+        { $set: { category: 'General Retail', subcategory: '' } }
       );
     }
 
@@ -315,7 +315,7 @@ const deleteCategory = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `Category "${cat.name}" deleted successfully.${productCount > 0 ? ` ${productCount} product(s) reassigned to General Machinery.` : ''}`
+      message: `Category "${cat.name}" deleted successfully.${productCount > 0 ? ` ${productCount} product(s) reassigned to General Retail.` : ''}`
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

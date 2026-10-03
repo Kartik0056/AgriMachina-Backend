@@ -52,12 +52,11 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   farmDetails: {
-    farmType: { type: String, default: 'Vegetable & Crop Farming' },
-    farmSizeAcres: { type: Number, default: 5 },
-    state: { type: String, default: 'Gujarat' },
+    farmType: { type: String, default: 'All Categories' },
+    farmSizeAcres: { type: Number, default: 0 },
+    state: { type: String, default: 'Delhi' },
     district: { type: String, default: '' },
     pincode: { type: String, default: '' },
-    primaryCrops: { type: [String], default: ['Cotton', 'Sugarcane', 'Paddy'] },
     preferredLanguage: { type: String, default: 'Hindi / English' }
   },
   addresses: [addressSchema],

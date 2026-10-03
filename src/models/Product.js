@@ -225,7 +225,7 @@ const productSchema = new mongoose.Schema({
   },
   productType: {
     type: String,
-    default: 'Machinery',
+    default: 'Spices & Essentials',
     trim: true
   },
   category: {
@@ -259,7 +259,7 @@ const productSchema = new mongoose.Schema({
   // 2. Identification
   hsnCode: {
     type: String,
-    default: '8432', // Standard HSN code for Agricultural, horticultural or forestry machinery
+    default: '0910', // Standard HSN code for spices and culinary seasonings
     trim: true
   },
   barcode: {
@@ -317,7 +317,7 @@ const productSchema = new mongoose.Schema({
   },
   gstPercent: {
     type: Number,
-    default: 12, // Standard GST rate for agricultural equipment in India (12% or 18%)
+    default: 5, // Standard GST rate for spices and packaged food items (5% or 12%)
     min: 0,
     max: 28
   },
@@ -397,7 +397,7 @@ const productSchema = new mongoose.Schema({
   },
   warehouse: {
     type: String,
-    default: 'Main Agro Warehouse',
+    default: 'Central Fulfillment Hub',
     trim: true
   },
   warehouseLocation: {
@@ -496,10 +496,10 @@ const productSchema = new mongoose.Schema({
 
   // 13. Warranty
   warranty: {
-    period: { type: String, default: '1 Year Manufacturer Warranty' },
-    type: { type: String, default: 'Comprehensive' },
-    provider: { type: String, default: 'OEM Manufacturer Service Network' },
-    terms: { type: String, default: 'Covers motor, gearbox, and structural defects. Wear and tear parts like blades and belts are covered for 30 days.' },
+    period: { type: String, default: '100% Quality & Purity Assurance' },
+    type: { type: String, default: 'Authenticity Guarantee' },
+    provider: { type: String, default: 'Eidula Quality Assurance' },
+    terms: { type: String, default: 'Guaranteed 100% pure, adulteration-free with sealed freshness packaging and easy returns for damaged transit.' },
     documentUrl: { type: String, default: '' }
   },
 
@@ -516,7 +516,7 @@ const productSchema = new mongoose.Schema({
     minMonthlyEmi: { type: Number, default: 0 },
     financePartners: {
       type: [String],
-      default: ['HDFC Bank Agri', 'SBI Kisan Credit', 'Bajaj Finserv Agri', 'Kotak Mahindra', 'TVS Credit']
+      default: ['HDFC Bank', 'ICICI Bank', 'Bajaj Finserv', 'Kotak Mahindra', 'Axis Bank']
     }
   },
 
@@ -687,5 +687,11 @@ productSchema.index({
   unitDisplay: 'text',
   shortDescription: 'text'
 });
+
+// Compound indexes for high-speed O(log N) filtered queries
+productSchema.index({ status: 1, category: 1, createdAt: -1 });
+productSchema.index({ status: 1, isDealOfTheDay: 1, hasExtraDiscount: 1 });
+productSchema.index({ status: 1, sellingPrice: 1 });
+productSchema.index({ 'ratings.averageRating': -1 });
 
 module.exports = mongoose.model('Product', productSchema);

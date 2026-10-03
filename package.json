@@ -1,7 +1,7 @@
 {
-  "name": "agricultural-ecom-server",
+  "name": "eidula-ecom-server",
   "version": "1.0.0",
-  "description": "Production-grade Agricultural E-Commerce backend & Admin CMS",
+  "description": "Production-grade Eidula E-Commerce backend & Admin CMS",
   "main": "src/server.js",
   "type": "commonjs",
   "scripts": {

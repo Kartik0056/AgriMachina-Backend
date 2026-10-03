@@ -58,7 +58,7 @@ const DEFAULT_ROLES = {
   },
   PRODUCT_MANAGER: {
     name: 'PRODUCT_MANAGER',
-    description: 'Manages catalog, agricultural machinery specs, inventory, and bulk imports',
+    description: 'Manages catalog, product specs, spices inventory, and bulk imports',
     permissions: [
       PERMISSIONS.PRODUCT_CREATE,
       PERMISSIONS.PRODUCT_UPDATE,
@@ -71,7 +71,7 @@ const DEFAULT_ROLES = {
   },
   ORDER_MANAGER: {
     name: 'ORDER_MANAGER',
-    description: 'Manages incoming farmer orders, shipping dispatch, and delivery statuses',
+    description: 'Manages incoming customer orders, shipping dispatch, and delivery statuses',
     permissions: [
       PERMISSIONS.ORDER_VIEW,
       PERMISSIONS.ORDER_UPDATE,
@@ -132,18 +132,15 @@ const REVIEW_STATUS = {
 };
 
 const IDEAL_FOR_PRESETS = [
-  'Small Farms',
-  'Medium Farms',
-  'Large Farms',
-  'Vegetable Farming',
-  'Orchards',
-  'Nurseries',
-  'Gardening',
-  'Paddy',
-  'Wheat',
-  'Sugarcane',
-  'Fruit Farming',
-  'Commercial Farming'
+  'Daily Cooking',
+  'Home Kitchens',
+  'Gourmet & Dining',
+  'Music & Travel',
+  'Home Decor',
+  'Workshop & DIY',
+  'Health & Wellness',
+  'Gifting & Festive',
+  'Commercial & Retail'
 ];
 
 const DEFAULT_SPEC_GROUPS = [

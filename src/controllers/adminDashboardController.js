@@ -78,7 +78,7 @@ const getDashboardStats = async (req, res) => {
       timelineOrders.push(found ? found.orders : 0);
     }
 
-    // 2. Sales by Machinery Category
+    // 2. Sales by Store Category
     const categorySales = await Order.aggregate([
       { $match: { orderStatus: { $nin: ['Cancelled', 'Refunded'] } } },
       { $unwind: '$items' },
@@ -93,7 +93,7 @@ const getDashboardStats = async (req, res) => {
       { $unwind: { path: '$prod', preserveNullAndEmptyArrays: true } },
       {
         $group: {
-          _id: { $ifNull: ['$prod.category', 'Other Machinery'] },
+          _id: { $ifNull: ['$prod.category', 'Other Categories'] },
           totalSold: { $sum: '$items.quantity' },
           totalRevenue: { $sum: '$items.subtotal' }
         }
@@ -102,7 +102,7 @@ const getDashboardStats = async (req, res) => {
       { $limit: 6 }
     ]);
 
-    // 3. Top 5 Performing Machinery Products
+    // 3. Top 5 Performing Catalog Products
     const topProducts = await Product.find()
       .sort({ 'analytics.purchasesCount': -1, sellingPrice: -1 })
       .limit(5)

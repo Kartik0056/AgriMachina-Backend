@@ -27,9 +27,8 @@ const register = async (req, res) => {
       phone: phone || '',
       password: passwordHash,
       farmDetails: farmDetails || {
-        farmType: 'Vegetable Farming',
-        farmSizeAcres: 5,
-        state: 'Gujarat'
+        farmType: 'All Categories',
+        state: 'Delhi'
       }
     });
 

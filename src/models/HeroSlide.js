@@ -18,12 +18,12 @@ const heroSlideSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    default: 'Agricultural Machinery',
+    default: 'General Store',
     trim: true
   },
   bgImage: {
     type: String,
-    default: '/images/machinery/power_weeder.jpg'
+    default: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1200&q=80'
   },
   productImage: {
     type: String,
@@ -70,7 +70,7 @@ const heroSlideSchema = new mongoose.Schema({
   },
   ctaText: {
     type: String,
-    default: 'Explore Full Machine Details',
+    default: 'Explore Deals',
     trim: true
   },
   ctaLink: {
@@ -93,5 +93,7 @@ const heroSlideSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+heroSlideSchema.index({ isActive: 1, sortOrder: 1 });
 
 module.exports = mongoose.model('HeroSlide', heroSlideSchema);

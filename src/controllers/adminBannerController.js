@@ -3,134 +3,90 @@ const Product = require('../models/Product');
 const { broadcastRealtimeEvent } = require('../services/realtimeService');
 const { logAuditAction } = require('../services/auditService');
 
+const cacheService = require('../services/cacheService');
+
 const DEFAULT_SLIDES = [
   {
-    title: 'Power Weeder 7HP Petrol 4-Stroke (AV-708)',
-    tagline: 'High-torque 208cc power weeder engineered for deep inter-row soil cultivation across tough clay, cotton, and sugarcane fields.',
-    badge: '🔥 DEAL OF THE DAY • 20% OFF',
-    category: 'Power Weeder & Tiller',
-    bgImage: '/images/machinery/power_weeder.jpg',
-    productImage: '/images/machinery/power_weeder.jpg',
-    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    title: 'Royal Malabar & Kashmiri Gourmet Spices',
+    tagline: '100% pure organic whole spices, royal biryani masale, and high-curcumin Lakadong turmeric.',
+    badge: '🌶️ 100% PURE & ORGANIC • FSSAI CERTIFIED',
+    category: 'Spices & Masale',
+    bgImage: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1600&q=80',
+    productImage: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=800&q=80',
+    videoUrl: '',
     isVideoBackground: false,
-    specs: [
-      '208cc 4-Stroke OHV Engine',
-      '900mm Adjustable Tilling Width',
-      '32 Heat-Treated Boron Blades',
-      '2 Forward + 1 Reverse Gearbox'
-    ],
-    price: 38499,
-    mrp: 48500,
-    discountPercent: 20,
-    monthlyEmi: 1171,
-    productSlug: 'power-weeder-7hp-petrol-av-708',
-    ctaText: 'Explore Full Machine Details',
-    ctaLink: '/product/power-weeder-7hp-petrol-av-708',
+    specs: ['Agmark & FSSAI Certified', 'Aroma-Lock Fresh Sealed', 'Zero Artificial Colors'],
+    price: 499,
+    mrp: 699,
+    discountPercent: 28,
+    monthlyEmi: 166,
+    productSlug: 'royal-spices-collection',
+    ctaText: 'Explore Spices & Masale',
+    ctaLink: '/products?category=Spices+%26+Masale',
     sortOrder: 0,
     isActive: true,
     countdownHours: 5
   },
   {
-    title: '5HP Solar Submersible Pump Set (DC Brushless)',
-    tagline: 'Heavy-duty stainless steel solar pump set with smart MPPT controller for reliable, uninterrupted farm canal and borewell irrigation.',
-    badge: '☀️ 100% SOLAR • ZERO ELECTRICITY BILL',
-    category: 'Pumps & Irrigation',
-    bgImage: '/images/machinery/solar_pump.jpg',
-    productImage: '/images/machinery/solar_pump.jpg',
+    title: 'UltraSound Pro Wireless ANC Earbuds (48h)',
+    tagline: 'Hybrid 42dB Active Noise Cancellation, 48-hour ultra endurance, and custom bass boost acoustic drivers.',
+    badge: '⚡ MEGA TECH SALE • 45% OFF',
+    category: 'Electronics & Smart Tech',
+    bgImage: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1600&q=80',
+    productImage: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80',
     videoUrl: '',
     isVideoBackground: false,
-    specs: [
-      '35,000 Liters/Hour Discharge',
-      'Up to 120 Meters Head Depth',
-      'IP68 Stainless Steel Body',
-      'Smart MPPT Solar Tracking'
-    ],
-    price: 74999,
-    mrp: 89999,
-    discountPercent: 17,
-    monthlyEmi: 2280,
-    productSlug: '5hp-solar-submersible-pump-set',
-    ctaText: 'Explore Full Machine Details',
-    ctaLink: '/product/5hp-solar-submersible-pump-set',
+    specs: ['42dB Hybrid Active Noise Cancellation', '48 Hours Total Playback', '1-Yr Brand Warranty'],
+    price: 1899,
+    mrp: 3499,
+    discountPercent: 45,
+    monthlyEmi: 316,
+    productSlug: 'ultrasound-pro-earbuds',
+    ctaText: 'View Electronics Deals',
+    ctaLink: '/products?category=Electronics+%26+Smart+Tech',
     sortOrder: 1,
     isActive: true,
     countdownHours: 6
   },
   {
-    title: 'Heavy-Duty 6-Foot Rotavator (Multi-Speed)',
-    tagline: 'Dual-speed heavy tractor rotavator for single-pass seedbed preparation in wet puddle and hard dry soil.',
-    badge: '⚙️ TRACTOR PTO • MULTI-SPEED GEARBOX',
-    category: 'Accessories & Attachment',
-    bgImage: '/images/machinery/rotavator.jpg',
-    productImage: '/images/machinery/rotavator.jpg',
+    title: 'Artisan Handcrafted Ceramic Ambient Lamp',
+    tagline: 'Warm textured stoneware ceramic base with woven natural linen shade for cozy Scandinavian living spaces.',
+    badge: '🏺 ARTISAN HANDCRAFTED LUXURY',
+    category: 'Home Decor & Living',
+    bgImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=1600&q=80',
+    productImage: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80',
     videoUrl: '',
     isVideoBackground: false,
-    specs: [
-      '48 Boron Steel L-Type Blades',
-      'Multi-Speed Heavy Cast Iron Gearbox',
-      '35 - 55 HP Tractor Compatible',
-      'Depth Control Side Skids'
-    ],
-    price: 94500,
-    mrp: 112000,
-    discountPercent: 16,
-    monthlyEmi: 2875,
-    productSlug: 'heavy-duty-6-foot-rotavator',
-    ctaText: 'Explore Full Machine Details',
-    ctaLink: '/product/heavy-duty-6-foot-rotavator',
+    specs: ['Handcrafted Stoneware', 'Natural Woven Linen Drum Shade', 'Warm Dimmable LED Bulb'],
+    price: 2499,
+    mrp: 3999,
+    discountPercent: 37,
+    monthlyEmi: 416,
+    productSlug: 'ceramic-ambient-lamp',
+    ctaText: 'Discover Home Decor',
+    ctaLink: '/products?category=Home+Decor+%26+Living',
     sortOrder: 2,
     isActive: true,
     countdownHours: 4
   },
   {
-    title: '50cc Backpack Multi-Crop Brush Cutter & Harvester',
-    tagline: 'Harvest paddy, wheat, sugarcane, fodder grass, and dense thicket shrubs effortlessly with multi-blade attachments.',
-    badge: '🌾 MULTI-CROP HARVESTING • 2.2 HP 2-STROKE',
-    category: 'Harvesting Machinery',
-    bgImage: '/images/machinery/brush_cutter.jpg',
-    productImage: '/images/machinery/brush_cutter.jpg',
+    title: 'Heavy-Duty 1000W Pure Copper Mixer Grinder',
+    tagline: 'Commercial-grade 100% copper motor with multi-utility leakproof stainless steel jars for tough grinding.',
+    badge: '🍳 BESTSELLER • 5-YEAR MOTOR WARRANTY',
+    category: 'Kitchen & Home Appliances',
+    bgImage: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1600&q=80',
+    productImage: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&q=80',
     videoUrl: '',
     isVideoBackground: false,
-    specs: [
-      '50cc 2.2 HP High-Torque Engine',
-      'Backpack Shock-Absorbing Frame',
-      '80-Teeth Alloy Crop Harvester',
-      'Tap & Go Nylon Trimmer Head'
-    ],
-    price: 23999,
-    mrp: 28500,
-    discountPercent: 16,
-    monthlyEmi: 1027,
-    productSlug: '50cc-multi-crop-backpack-brush-cutter',
-    ctaText: 'Explore Full Machine Details',
-    ctaLink: '/product/50cc-multi-crop-backpack-brush-cutter',
-    sortOrder: 3,
-    isActive: true,
-    countdownHours: 7
-  },
-  {
-    title: '2-in-1 Battery cum Manual Knapsack Sprayer 16L',
-    tagline: 'High-pressure 12V rechargeable battery sprayer with telescopic brass lance for uniform pesticide & fertilizer spraying.',
-    badge: '💧 BEST VALUE • DUAL MOTOR 16L',
-    category: 'Sprayers & Crop Protection',
-    bgImage: '/images/machinery/sprayer.jpg',
-    productImage: '/images/machinery/sprayer.jpg',
-    videoUrl: '',
-    isVideoBackground: false,
-    specs: [
-      '12V 12Ah Rechargeable Battery',
-      'Up to 8 Hours Continuous Spray',
-      'Telescopic Brass Spray Wand',
-      'Dual High-Pressure Motor'
-    ],
+    specs: ['1000W 100% Copper Motor', '4 Food-Grade Stainless Steel Jars', 'Overload Protection'],
     price: 3499,
-    mrp: 4999,
-    discountPercent: 30,
-    monthlyEmi: 299,
-    productSlug: '2-in-1-battery-cum-manual-knapsack-agriculture-sprayer-16l',
-    ctaText: 'Explore Full Machine Details',
-    ctaLink: '/product/2-in-1-battery-cum-manual-knapsack-agriculture-sprayer-16l',
-    sortOrder: 4,
+    mrp: 5499,
+    discountPercent: 36,
+    monthlyEmi: 583,
+    productSlug: 'heavy-duty-mixer-grinder-1000w',
+    ctaText: 'Explore Kitchen Appliances',
+    ctaLink: '/products?category=Kitchen+%26+Home+Appliances',
+    sortOrder: 3,
     isActive: true,
     countdownHours: 5
   }
@@ -140,7 +96,6 @@ const DEFAULT_SLIDES = [
 const ensureDefaultSlides = async () => {
   const count = await HeroSlide.countDocuments();
   if (count === 0) {
-    // Attempt to link matching products if they exist
     for (const s of DEFAULT_SLIDES) {
       if (s.productSlug) {
         const prod = await Product.findOne({ slug: s.productSlug }).select('_id slug');
@@ -153,14 +108,27 @@ const ensureDefaultSlides = async () => {
   }
 };
 
-// 1. Get Public Active Hero Slides for Storefront
+// 1. Get Public Active Hero Slides for Storefront (Cached with 60s TTL)
 const getPublicSlides = async (req, res) => {
   try {
+    const cached = cacheService.get('public_hero_slides');
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json({
+        success: true,
+        count: cached.length,
+        slides: cached
+      });
+    }
+
     await ensureDefaultSlides();
     const slides = await HeroSlide.find({ isActive: true })
       .sort({ sortOrder: 1, createdAt: -1 })
       .populate('productId', 'name slug sellingPrice mrp discountPercent mainImage category')
       .lean();
+
+    cacheService.set('public_hero_slides', slides, 60);
+    res.setHeader('X-Cache', 'MISS');
 
     return res.status(200).json({
       success: true,
@@ -206,6 +174,7 @@ const createSlide = async (req, res) => {
     const slide = new HeroSlide(data);
     await slide.save();
 
+    cacheService.invalidate('public_hero_slides');
     await logAuditAction(req, 'CREATE_HERO_SLIDE', 'HeroSlide', slide._id, { title: slide.title });
     broadcastRealtimeEvent('BANNER_CHANGED', { action: 'create', slideId: slide._id });
 
@@ -229,6 +198,7 @@ const updateSlide = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Hero slide not found.' });
     }
 
+    cacheService.invalidate('public_hero_slides');
     await logAuditAction(req, 'UPDATE_HERO_SLIDE', 'HeroSlide', slide._id, { title: slide.title });
     broadcastRealtimeEvent('BANNER_CHANGED', { action: 'update', slideId: slide._id });
 
@@ -252,6 +222,7 @@ const deleteSlide = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Hero slide not found.' });
     }
 
+    cacheService.invalidate('public_hero_slides');
     await logAuditAction(req, 'DELETE_HERO_SLIDE', 'HeroSlide', id, { title: slide.title });
     broadcastRealtimeEvent('BANNER_CHANGED', { action: 'delete', slideId: id });
 
@@ -276,6 +247,8 @@ const reorderSlides = async (req, res) => {
       HeroSlide.findByIdAndUpdate(id, { sortOrder: index })
     );
     await Promise.all(updates);
+
+    cacheService.invalidate('public_hero_slides');
 
     await logAuditAction(req, 'REORDER_HERO_SLIDES', 'HeroSlide', null, { count: slideIds.length });
     broadcastRealtimeEvent('BANNER_CHANGED', { action: 'reorder' });

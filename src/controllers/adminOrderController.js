@@ -173,8 +173,8 @@ const getOrderInvoice = async (req, res) => {
         invoiceNumber: `INV-${order.orderNumber}`,
         invoiceDate: order.createdAt,
         company: {
-          name: 'Siddhiva Commerce & Commercial Mart Pvt. Ltd.',
-          brand: 'Siddhiva',
+          name: 'Eidula Lifestyle & Spices Pvt. Ltd.',
+          brand: 'Eidula',
           gstin: '07AABCY1234F1Z8',
           phone: '+91 63952 11953',
           email: 'kartikkumar151998@gmail.com'

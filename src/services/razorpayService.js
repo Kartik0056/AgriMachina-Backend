@@ -31,7 +31,7 @@ async function createRazorpayOrder(amountInRupees, receipt, notes = {}) {
     currency: 'INR',
     receipt: receipt || `rcpt_${Date.now()}`,
     notes: {
-      platform: 'AgriMachina E-Commerce',
+      platform: 'Eidula Lifestyle & Spices',
       ...notes
     }
   };
@@ -190,7 +190,7 @@ function getComprehensiveEMIPlans(principalAmount = 39999, customDownPayment = 0
     { bank: 'HDFC Bank Debit Card', code: 'HDFC_DC', tenures: [3, 6, 9, 12], rate: 14.0 },
     { bank: 'ICICI Bank Debit Card', code: 'ICIC_DC', tenures: [3, 6, 9, 12], rate: 14.0 },
     { bank: 'Axis Bank Debit Card', code: 'UTIB_DC', tenures: [3, 6, 9, 12], rate: 14.5 },
-    { bank: 'SBI Debit Card (Kisan ATM)', code: 'SBIN_DC', tenures: [3, 6, 9, 12, 18], rate: 13.0 }
+    { bank: 'State Bank of India Debit Card', code: 'SBIN_DC', tenures: [3, 6, 9, 12, 18], rate: 13.0 }
   ];
 
   const debitCardPlans = [];
@@ -208,7 +208,7 @@ function getComprehensiveEMIPlans(principalAmount = 39999, customDownPayment = 0
     });
   });
 
-  // 4. CARDLESS & KISAN NBFC FINANCING
+  // 4. CARDLESS & CONSUMER NBFC FINANCING
   const cardlessNbfcPlans = [
     {
       partner: 'Bajaj Finserv EMI Network',
@@ -228,54 +228,39 @@ function getComprehensiveEMIPlans(principalAmount = 39999, customDownPayment = 0
       calculation: getEmi(9, 9.5)
     },
     {
-      partner: 'TVS Credit Kisan Machinery Loan',
-      type: 'Kisan Agriculture Loan',
+      partner: 'TVS Credit Consumer Loan',
+      type: 'Consumer Durable Loan',
       tenureMonths: 12,
       annualRate: 11.5,
       isNoCost: false,
-      badge: 'Subsidized Farm Equipment Rate',
+      badge: 'Low Down Payment',
       calculation: getEmi(12, 11.5)
     },
     {
-      partner: 'TVS Credit Kisan Machinery Loan',
-      type: 'Kisan Agriculture Loan',
+      partner: 'TVS Credit Consumer Loan',
+      type: 'Consumer Durable Loan',
       tenureMonths: 24,
       annualRate: 11.5,
       isNoCost: false,
-      badge: 'Subsidized Farm Equipment Rate',
+      badge: 'Flexible Monthly Tenure',
       calculation: getEmi(24, 11.5)
     },
     {
-      partner: 'TVS Credit Kisan Machinery Loan',
-      type: 'Kisan Agriculture Loan',
-      tenureMonths: 36,
-      annualRate: 11.5,
-      isNoCost: false,
-      badge: 'Long-Term 36-Month Plan',
-      calculation: getEmi(36, 11.5)
-    },
-    {
-      partner: 'HDFC Kisan Gold Card (KGC)',
-      type: 'Kisan Agriculture Loan',
+      partner: 'HDFC Consumer EasyEMI',
+      type: 'Consumer Durable Loan',
       tenureMonths: 12,
       annualRate: 11.0,
       isNoCost: false,
+      badge: 'Instant Pre-Approved EMI',
       calculation: getEmi(12, 11.0)
     },
     {
-      partner: 'HDFC Kisan Gold Card (KGC)',
-      type: 'Kisan Agriculture Loan',
-      tenureMonths: 24,
-      annualRate: 11.0,
-      isNoCost: false,
-      calculation: getEmi(24, 11.0)
-    },
-    {
-      partner: 'ZestMoney / DMI Finance',
+      partner: 'ZestMoney / Snapmint Cardless',
       type: 'Instant Digital Cardless',
       tenureMonths: 6,
       annualRate: 12.0,
       isNoCost: false,
+      badge: 'Zero Paperwork',
       calculation: getEmi(6, 12.0)
     }
   ];
@@ -296,7 +281,7 @@ function getComprehensiveEMIPlans(principalAmount = 39999, customDownPayment = 0
       'Axis Bank',
       'Kotak Mahindra Bank',
       'Bajaj Finserv',
-      'TVS Credit Kisan Finance',
+      'TVS Credit Finance',
       'Bank of Baroda',
       'IndusInd Bank'
     ]

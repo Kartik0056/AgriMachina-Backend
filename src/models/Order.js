@@ -93,7 +93,7 @@ const orderSchema = new mongoose.Schema({
     index: true
   },
   tracking: {
-    courierName: { type: String, default: 'AgriLogistics Express' },
+    courierName: { type: String, default: 'Eidula Express Logistics' },
     trackingNumber: { type: String, default: '' },
     estimatedDelivery: { type: String, default: '4-7 Days' },
     statusUpdates: [statusUpdateSchema]

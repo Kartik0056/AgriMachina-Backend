@@ -1,4 +1,5 @@
 const Product = require('../models/Product');
+const cacheService = require('../services/cacheService');
 const { getRecommendationsForProduct, getFrequentlyBoughtTogether } = require('../services/recommendationService');
 
 const getPublicProducts = async (req, res) => {
@@ -97,13 +98,15 @@ const getPublicProducts = async (req, res) => {
     }
 
     const skip = (Number(page) - 1) * Number(limit);
-    const total = await Product.countDocuments(query);
-    const products = await Product.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(Number(limit))
-      .select('name slug brand modelNumber sku productType category subcategory unit netQuantity unitDisplay variants mrp sellingPrice discountPercent gstPercent stockStatus mainImage ratings emi idealFor shortDescription isPublished isDealOfTheDay dealBadge dealEndsAt hasExtraDiscount extraDiscountType extraDiscountValue extraDiscountLabel effectivePrice')
-      .lean();
+    const [total, products] = await Promise.all([
+      Product.countDocuments(query),
+      Product.find(query)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(Number(limit))
+        .select('name slug brand modelNumber sku productType category subcategory unit netQuantity unitDisplay variants mrp sellingPrice discountPercent gstPercent stockStatus mainImage ratings emi idealFor shortDescription isPublished isDealOfTheDay dealBadge dealEndsAt hasExtraDiscount extraDiscountType extraDiscountValue extraDiscountLabel effectivePrice')
+        .lean()
+    ]);
 
     return res.status(200).json({
       success: true,
@@ -119,6 +122,16 @@ const getPublicProducts = async (req, res) => {
 
 const getDeals = async (req, res) => {
   try {
+    const cached = cacheService.get('public_deals');
+    if (cached) {
+      res.setHeader('X-Cache', 'HIT');
+      return res.status(200).json({
+        success: true,
+        count: cached.length,
+        deals: cached
+      });
+    }
+
     let deals = await Product.find({
       status: 'Published',
       $or: [
@@ -137,6 +150,9 @@ const getDeals = async (req, res) => {
       .lean();
       deals = [...deals, ...moreDeals];
     }
+
+    cacheService.set('public_deals', deals, 45);
+    res.setHeader('X-Cache', 'MISS');
 
     return res.status(200).json({
       success: true,

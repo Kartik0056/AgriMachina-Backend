@@ -28,12 +28,12 @@ const updateProductRatingStats = async (productId) => {
 
 const getProductReviews = async (req, res) => {
   try {
-    const { productId } = req.params;
+    const productId = req.params.productId || req.query.productId;
     const { page = 1, limit = 20, rating } = req.query;
 
     const query = {
       product: productId,
-      status: { $in: ['Approved', 'Pending'] } // Show active and newly created reviews immediately
+      status: { $in: ['Approved', 'Pending'] } // Show active reviews immediately
     };
 
     if (rating) query.rating = Number(rating);
@@ -44,7 +44,7 @@ const getProductReviews = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit))
-      .select('_id user userName rating title comment farmContext images videoUrl verifiedPurchase status createdAt')
+      .select('_id user userName rating title comment images videoUrl verifiedPurchase status createdAt')
       .lean();
 
     // Rating breakdown
@@ -77,29 +77,71 @@ const getProductReviews = async (req, res) => {
 
 const checkReviewEligibility = async (req, res) => {
   try {
-    const { productId } = req.params;
+    const productId = req.params.productId || req.query.productId;
     const userId = req.user._id;
 
-    // Check if existing review exists
+    if (!productId) {
+      return res.status(400).json({ success: false, message: 'Product ID is required.' });
+    }
+
+    // 1. Check if user has an existing review for this product
     const existingReview = await Review.findOne({
       user: userId,
       product: productId
     });
 
-    // Check if user has an order for this product
-    const order = await Order.findOne({
+    // 2. Query delivered orders for this user and product
+    const deliveredOrder = await Order.findOne({
+      user: userId,
+      'items.product': productId,
+      orderStatus: 'Delivered'
+    }).sort({ createdAt: -1 });
+
+    if (deliveredOrder) {
+      return res.status(200).json({
+        success: true,
+        eligible: true,
+        reason: 'DELIVERED',
+        alreadyReviewed: !!existingReview,
+        existingReview: existingReview || null,
+        orderId: deliveredOrder._id,
+        orderNumber: deliveredOrder.orderNumber,
+        deliveredAt: deliveredOrder.deliveredAt || deliveredOrder.updatedAt,
+        verifiedPurchase: true,
+        message: 'Aapne is product ko purchase kiya hai aur order deliver ho chuka hai. Aap verified review de sakte hain.'
+      });
+    }
+
+    // 3. Check if user purchased it, but order is NOT yet delivered
+    const anyOrder = await Order.findOne({
       user: userId,
       'items.product': productId
     }).sort({ createdAt: -1 });
 
+    if (anyOrder) {
+      return res.status(200).json({
+        success: true,
+        eligible: false,
+        reason: 'ORDER_NOT_DELIVERED',
+        alreadyReviewed: false,
+        existingReview: null,
+        orderId: anyOrder._id,
+        orderNumber: anyOrder.orderNumber,
+        currentOrderStatus: anyOrder.orderStatus,
+        verifiedPurchase: false,
+        message: `Aapka order #${anyOrder.orderNumber} abhi "${anyOrder.orderStatus}" status me hai. Order deliver hone ke baad hi aap review likh sakte hain.`
+      });
+    }
+
+    // 4. User has not purchased this product at all
     return res.status(200).json({
       success: true,
-      eligible: true,
-      alreadyReviewed: !!existingReview,
-      existingReview: existingReview || null,
-      orderId: order ? order._id : null,
-      orderNumber: order ? order.orderNumber : null,
-      verifiedPurchase: !!order
+      eligible: false,
+      reason: 'NOT_PURCHASED',
+      alreadyReviewed: false,
+      existingReview: null,
+      verifiedPurchase: false,
+      message: 'Product review dene ke liye is product ko buy karna zaroori hai. Verified delivery ke baad hi review allow hota hai.'
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -108,9 +150,13 @@ const checkReviewEligibility = async (req, res) => {
 
 const submitVerifiedReview = async (req, res) => {
   try {
-    const { productId } = req.params;
-    const { rating, title, comment, farmContext, images, videoUrl } = req.body;
+    const productId = req.params.productId || req.body.productId;
+    const { rating, title, comment, images, videoUrl } = req.body;
     const userId = req.user._id;
+
+    if (!productId) {
+      return res.status(400).json({ success: false, message: 'Product ID is required.' });
+    }
 
     if (!rating || Number(rating) < 1 || Number(rating) > 5) {
       return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5 stars.' });
@@ -120,11 +166,37 @@ const submitVerifiedReview = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Review comment must be at least 5 characters long.' });
     }
 
-    // Check if user has an order
-    const userOrder = await Order.findOne({
+    // STRICT CHECK: User MUST have a delivered order for this product
+    const deliveredOrder = await Order.findOne({
       user: userId,
-      'items.product': productId
+      'items.product': productId,
+      orderStatus: 'Delivered'
     }).sort({ createdAt: -1 });
+
+    if (!deliveredOrder) {
+      const anyOrder = await Order.findOne({
+        user: userId,
+        'items.product': productId
+      }).sort({ createdAt: -1 });
+
+      if (anyOrder) {
+        return res.status(403).json({
+          success: false,
+          eligible: false,
+          reason: 'ORDER_NOT_DELIVERED',
+          currentOrderStatus: anyOrder.orderStatus,
+          orderNumber: anyOrder.orderNumber,
+          message: `Product review tabhi diya ja sakta hai jab order deliver ho jaye. Aapka order #${anyOrder.orderNumber} abhi "${anyOrder.orderStatus}" status me hai.`
+        });
+      }
+
+      return res.status(403).json({
+        success: false,
+        eligible: false,
+        reason: 'NOT_PURCHASED',
+        message: 'Product review dene ke liye pehle is product ko buy karna zaroori hai aur order deliver hona chahiye.'
+      });
+    }
 
     // Check if user already submitted a review
     let existingReview = await Review.findOne({
@@ -140,7 +212,8 @@ const submitVerifiedReview = async (req, res) => {
       existingReview.rating = Number(rating);
       existingReview.title = sanitizedTitle;
       existingReview.comment = sanitizedComment;
-      existingReview.farmContext = farmContext || existingReview.farmContext;
+      existingReview.order = deliveredOrder._id;
+      existingReview.verifiedPurchase = true;
       if (Array.isArray(images)) existingReview.images = images;
       if (videoUrl !== undefined) existingReview.videoUrl = videoUrl.trim();
       existingReview.status = 'Approved'; // Instant publication
@@ -150,7 +223,7 @@ const submitVerifiedReview = async (req, res) => {
 
       return res.status(200).json({
         success: true,
-        message: 'Your review has been updated successfully!',
+        message: 'Aapka verified review successfully update ho gaya hai!',
         review: existingReview
       });
     }
@@ -158,31 +231,30 @@ const submitVerifiedReview = async (req, res) => {
     const newReview = new Review({
       product: productId,
       user: userId,
-      userName: req.user.name || 'Verified Farmer',
-      order: userOrder ? userOrder._id : null,
+      userName: req.user.name || 'Verified Customer',
+      order: deliveredOrder._id,
       rating: Number(rating),
       title: sanitizedTitle,
       comment: sanitizedComment,
-      farmContext: farmContext || req.user.farmDetails || {},
       images: Array.isArray(images) ? images : [],
       videoUrl: videoUrl ? videoUrl.trim() : '',
-      verifiedPurchase: !!userOrder,
-      status: 'Approved' // Published immediately so user can see it right away!
+      verifiedPurchase: true,
+      status: 'Approved' // Published immediately so user can see it right away
     });
 
     await newReview.save();
 
-    if (userOrder && !userOrder.reviewedProductIds?.includes(productId)) {
-      userOrder.reviewedProductIds = userOrder.reviewedProductIds || [];
-      userOrder.reviewedProductIds.push(productId);
-      await userOrder.save();
+    if (deliveredOrder && !deliveredOrder.reviewedProductIds?.includes(productId)) {
+      deliveredOrder.reviewedProductIds = deliveredOrder.reviewedProductIds || [];
+      deliveredOrder.reviewedProductIds.push(productId);
+      await deliveredOrder.save();
     }
 
     await updateProductRatingStats(productId);
 
     return res.status(201).json({
       success: true,
-      message: 'Thank you for your feedback! Your verified review is now live.',
+      message: 'Dhanyawad! Aapka verified review publish ho gaya hai.',
       review: newReview
     });
   } catch (error) {
@@ -193,7 +265,7 @@ const submitVerifiedReview = async (req, res) => {
 const updateMyReview = async (req, res) => {
   try {
     const { id } = req.params;
-    const { rating, title, comment, farmContext, images, videoUrl } = req.body;
+    const { rating, title, comment, images, videoUrl } = req.body;
     const userId = req.user._id;
 
     const review = await Review.findById(id);
@@ -206,10 +278,23 @@ const updateMyReview = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Unauthorized: You can only edit your own reviews.' });
     }
 
+    // Verify delivered order exists
+    const deliveredOrder = await Order.findOne({
+      user: userId,
+      'items.product': review.product,
+      orderStatus: 'Delivered'
+    });
+
+    if (!deliveredOrder) {
+      return res.status(403).json({
+        success: false,
+        message: 'Review update karne ke liye aapka order deliver hona zaroori hai.'
+      });
+    }
+
     if (rating) review.rating = Number(rating);
     if (title !== undefined) review.title = sanitizeHtml(title, { allowedTags: [] }).trim();
     if (comment) review.comment = sanitizeHtml(comment, { allowedTags: [] }).trim();
-    if (farmContext) review.farmContext = farmContext;
     if (images && Array.isArray(images)) review.images = images;
     if (videoUrl !== undefined) review.videoUrl = videoUrl.trim();
     review.status = 'Approved';
